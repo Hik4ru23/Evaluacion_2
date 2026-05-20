@@ -36,7 +36,7 @@ public class UsuariosService {
                 .nombre(dto.getNombre())
                 .correo(dto.getCorreo())
                 .contrasena(dto.getContrasena())
-                .saldo(dto.getSaldo())
+                .saldo(0.0) // Regla de negocio: Saldo inicial en 0
                 .build();
 
         Usuarios guardado = usuariosRepository.save(usuario);

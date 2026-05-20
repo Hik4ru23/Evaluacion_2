@@ -9,4 +9,3 @@ public class AmigosApplication {
         SpringApplication.run(AmigosApplication.class, args);
     }
 }
-

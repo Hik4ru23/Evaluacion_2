@@ -1,9 +1,7 @@
 com\eva2\staem\usuarios\service\UsuariosService.class
-com\eva2\staem\auth\config\JwtProvider.class
-com\eva2\staem\auth\filter\JwtAuthenticationFilter.class
-com\eva2\staem\auth\config\SecurityConfig.class
 com\eva2\staem\usuarios\controller\UsuariosController.class
 com\eva2\staem\usuarios\model\Usuarios.class
+com\eva2\staem\usuarios\DropColumn.class
 com\eva2\staem\usuarios\dto\UsuarioResponseDTO$UsuarioResponseDTOBuilder.class
 com\eva2\staem\usuarios\controller\UsuariosExceptionHandler.class
 com\eva2\staem\usuarios\dto\UsuarioRequestDTO$UsuarioRequestDTOBuilder.class
