@@ -1,0 +1,12 @@
+com\eva2\staem\config\FeignConfig.class
+com\eva2\staem\exception\GlobalExceptionHandler.class
+com\eva2\staem\soporte\model\Ticket$TicketBuilder.class
+com\eva2\staem\soporte\service\TicketService.class
+com\eva2\staem\soporte\dto\TicketRequestDTO.class
+com\eva2\staem\soporte\SoporteApplication.class
+com\eva2\staem\soporte\controller\TicketController.class
+com\eva2\staem\soporte\repository\TicketRepository.class
+com\eva2\staem\soporte\dto\TicketResponseDTO$TicketResponseDTOBuilder.class
+com\eva2\staem\config\FeignConfig$CustomErrorDecoder.class
+com\eva2\staem\soporte\model\Ticket.class
+com\eva2\staem\soporte\dto\TicketResponseDTO.class

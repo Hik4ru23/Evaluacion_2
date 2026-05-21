@@ -1,0 +1,9 @@
+com\eva2\staem\resenas\dto\ResenaResponseDTO.class
+com\eva2\staem\resenas\dto\ResenaRequestDTO.class
+com\eva2\staem\resenas\ResenasApplication.class
+com\eva2\staem\resenas\model\Resena.class
+com\eva2\staem\resenas\controller\ResenaController.class
+com\eva2\staem\resenas\model\Resena$ResenaBuilder.class
+com\eva2\staem\resenas\repository\ResenaRepository.class
+com\eva2\staem\resenas\service\ResenaService.class
+com\eva2\staem\resenas\dto\ResenaResponseDTO$ResenaResponseDTOBuilder.class
