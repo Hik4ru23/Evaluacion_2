@@ -38,5 +38,4 @@ El sistema se compone de un mínimo de 10 microservicios autónomos:
 1. Clonar el repositorio: `git clone https://github.com/Hik4ru23/Evaluacion_2.git`
 2. Configurar las credenciales del motor de base de datos en los archivos `application.properties` de cada microservicio.
 3. Iniciar el servidor **Eureka** (Service Discovery).
-4. Iniciar el **API Gateway**.
-5. Levantar de forma secuencial los microservicios restantes.
+4. Levantar de forma secuencial los microservicios restantes.
