@@ -1,9 +1,0 @@
-com\eva2\staem\carrito\model\Carrito$CarritoBuilder.class
-com\eva2\staem\carrito\model\Carrito.class
-com\eva2\staem\carrito\service\CarritoService.class
-com\eva2\staem\carrito\controller\CarritoController.class
-com\eva2\staem\carrito\dto\CarritoResponseDTO$CarritoResponseDTOBuilder.class
-com\eva2\staem\carrito\repository\CarritoRepository.class
-com\eva2\staem\carrito\dto\CarritoRequestDTO.class
-com\eva2\staem\carrito\CarritoApplication.class
-com\eva2\staem\carrito\dto\CarritoResponseDTO.class

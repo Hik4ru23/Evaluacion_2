@@ -18,7 +18,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(WebClientRequestException.class)
     public ResponseEntity<?> handleTimeout(WebClientRequestException ex) {
-        log.error("Timeout calling remote service", ex);
+        log.error("Tiempo de espera agotado al llamar al servicio remoto", ex);
         Map<String, String> body = new HashMap<>();
         body.put("error", "Gateway Timeout");
         body.put("message", "No se pudo conectar con el servicio remoto (timeout)");
@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGeneric(Exception ex) {
-        log.error("Unhandled exception", ex);
+        log.error("Excepción no controlada", ex);
         Map<String, String> body = new HashMap<>();
         body.put("error", "Internal Server Error");
         body.put("message", ex.getMessage() == null ? "Error interno" : ex.getMessage());

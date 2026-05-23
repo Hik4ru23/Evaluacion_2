@@ -1,9 +1,0 @@
-com\eva2\staem\promociones\dto\PromocionRequestDTO.class
-com\eva2\staem\promociones\dto\PromocionResponseDTO$PromocionResponseDTOBuilder.class
-com\eva2\staem\promociones\controller\PromocionController.class
-com\eva2\staem\promociones\model\Promocion.class
-com\eva2\staem\promociones\repository\PromocionRepository.class
-com\eva2\staem\promociones\PromocionesApplication.class
-com\eva2\staem\promociones\model\Promocion$PromocionBuilder.class
-com\eva2\staem\promociones\service\PromocionService.class
-com\eva2\staem\promociones\dto\PromocionResponseDTO.class
