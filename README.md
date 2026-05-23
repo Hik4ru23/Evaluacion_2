@@ -12,7 +12,6 @@ El sistema cumple con el estándar de desacoplamiento total, estructurado bajo e
 * **Framework Backend:** Spring Boot (Java)
 * **Persistencia:** Spring Data JPA / Hibernate
 * **Seguridad:** Spring Security, Tokens JJWT y BCrypt
-* **Service Discovery:** Eureka
 * **Enrutamiento:** API Gateway
 * **Comunicación:** Feign Client (sincrónica)
 
@@ -24,10 +23,10 @@ El sistema se compone de un mínimo de 10 microservicios autónomos:
 4. **MS-Carrito:** Gestión temporal de la intención de compra.
 5. **MS-Pagos:** Procesamiento de transacciones y validación de saldo.
 6. **MS-Resenas:** Sistema de calificaciones y comentarios de usuarios.
-7. **MS-Ofertas:** Gestión de descuentos temporales aplicados al catálogo.
-8. **MS-Comunidad:** Sistema de interacción social y lista de amistades.
+7. **MS-Promociones:** Gestión de descuentos temporales aplicados al catálogo.
+8. **MS-Amigos:** Sistema de interacción social y lista de amistades.
 9. **MS-Logros:** Registro de trofeos e hitos desbloqueados por los jugadores.
-10. **MS-Notificaciones:** Alertas del sistema sobre compras y eventos.
+10. **MS-Soporte:** Creacion de tickets
 
 ## Modelo de Datos (DER)
 <img width="2041" height="1562" alt="DER" src="https://github.com/user-attachments/assets/f4e275b6-904f-4bac-a02c-4f33595a2a3f" />
