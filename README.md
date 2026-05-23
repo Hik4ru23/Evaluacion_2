@@ -51,7 +51,7 @@ El sistema garantiza la **autonomía de datos**. Cada microservicio cuenta con s
 ## Pasos para Ejecutar
 
 ### 1. Requisitos Previos
-* Java 21 o superior instalado.
+* Java 21.
 * Maven instalado (o usar el wrapper `./mvnw` provisto).
 
 ### 2. Clonar el repositorio
