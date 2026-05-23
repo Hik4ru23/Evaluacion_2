@@ -1,17 +1,17 @@
-# Tienda de Juegos Digitales - Arquitectura de Microservicios 🎮
+# Tienda de Juegos Digitales - Arquitectura de Microservicios
 
-## 📝 Descripción del Proyecto
+## Descripción del Proyecto
 Plataforma distribuida para la gestión integral de una tienda de videojuegos digitales (estilo Steam o PlayStation Store). El sistema resuelve la necesidad de administrar usuarios, compras, catálogo y aspectos sociales de la comunidad gamer. Todo el ecosistema está construido bajo una arquitectura de microservicios, garantizando alta cohesión, bajo acoplamiento y persistencia de datos independiente para cada dominio.
 
 ---
 
-## 👥 Equipo de Desarrollo
+## Equipo de Desarrollo
 * **Enrique Ignacio Gutierrez Benites**
 * **Gonzalo Yáñez Arenas**
 
 ---
 
-## 🛠️ Arquitectura y Tecnologías
+## Arquitectura y Tecnologías
 El sistema cumple con el estándar de desacoplamiento total, estructurado bajo el patrón **CSR (Controller - Service - Repository)** e integrando las siguientes tecnologías:
 
 * **Framework Backend:** Spring Boot 4.0.6 (Java 21/25)
@@ -23,7 +23,7 @@ El sistema cumple con el estándar de desacoplamiento total, estructurado bajo e
 
 ---
 
-## 🔌 Microservicios y Puertos
+## Microservicios y Puertos
 El sistema se compone de **10 microservicios autónomos**, cada uno gestionando su propia base de datos persistente:
 
 | # | Microservicio | Directorio | Puerto | Descripción |
@@ -41,14 +41,14 @@ El sistema se compone de **10 microservicios autónomos**, cada uno gestionando 
 
 ---
 
-## 📊 Modelo de Datos (DER)
+## Modelo de Datos (DER)
 El sistema garantiza la **autonomía de datos**. Cada microservicio cuenta con su propio esquema persistente e independiente, comunicándose únicamente a través de APIs REST.
 
 <img width="2041" height="1562" alt="DER" src="https://github.com/user-attachments/assets/f4e275b6-904f-4bac-a02c-4f33595a2a3f" />
 
 ---
 
-## 🚀 Pasos para Ejecutar
+## Pasos para Ejecutar
 
 ### 1. Requisitos Previos
 * Java 21 o superior instalado.
