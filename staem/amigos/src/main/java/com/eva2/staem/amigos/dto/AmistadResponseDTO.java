@@ -13,8 +13,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class AmistadResponseDTO {
     private Long id;
+    
     private Long usuarioId;
+    
     private Long amigoId;
+    
     private String estado;
+    
     private LocalDateTime fechaSolicitud;
 }

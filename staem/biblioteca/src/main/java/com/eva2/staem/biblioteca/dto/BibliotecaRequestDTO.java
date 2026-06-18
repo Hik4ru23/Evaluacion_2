@@ -9,14 +9,17 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class BibliotecaRequestDTO {
 
+
     @NotNull(message = "El ID del usuario es obligatorio")
     private Long usuarioId;
+
 
     @NotEmpty(message = "La lista de juegos no puede estar vacia")
     private List<Long> juegosIds;

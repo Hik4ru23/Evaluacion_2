@@ -1,0 +1,122 @@
+services:
+  eureka-server:
+    build: ./eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - staem-network
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8761"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  usuarios:
+    build: ./usuarios
+    ports:
+      - "8082:8082"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - staem-network
+
+  catalogo:
+    build: ./catalogo
+    ports:
+      - "8083:8083"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - staem-network
+
+  biblioteca:
+    build: ./biblioteca
+    ports:
+      - "8084:8084"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - staem-network
+
+  pagos:
+    build: ./pagos
+    ports:
+      - "8086:8086"
+    environment:
+      - MS_USUARIOS_URL=http://usuarios:8082
+      - MS_CATALOGO_URL=http://catalogo:8083
+      - MS_BIBLIOTECA_URL=http://biblioteca:8084
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - staem-network
+
+  logros:
+    build: ./logros
+    ports:
+      - "8087:8087"
+    environment:
+      - MS_USUARIOS_URL=http://usuarios:8082
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - staem-network
+
+  amigos:
+    build: ./amigos
+    ports:
+      - "8088:8088"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - staem-network
+
+  carrito:
+    build: ./carrito
+    ports:
+      - "8089:8089"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - staem-network
+
+  resenas:
+    build: ./resenas
+    ports:
+      - "8090:8090"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - staem-network
+
+  promociones:
+    build: ./promociones
+    ports:
+      - "8091:8091"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - staem-network
+
+  soporte:
+    build: ./soporte
+    ports:
+      - "8092:8092"
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - staem-network
+
+networks:
+  staem-network:
+    driver: bridge

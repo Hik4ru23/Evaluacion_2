@@ -1,7 +1,6 @@
 package com.eva2.staem.usuarios.dto;
 
 import lombok.*;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
