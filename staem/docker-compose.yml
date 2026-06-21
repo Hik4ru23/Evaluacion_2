@@ -1,4 +1,15 @@
 services:
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: staem-api-gateway
+    ports:
+      - "9090:8080"
+    networks:
+      - staem-network
+    depends_on:
+      eureka-server:
+        condition: service_healthy
   eureka-server:
     build: ./eureka-server
     ports:
@@ -120,3 +131,4 @@ services:
 networks:
   staem-network:
     driver: bridge
+

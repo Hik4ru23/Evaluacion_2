@@ -1,0 +1,59 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: amigos
+          uri: lb://amigos
+          predicates:
+            - Path=/amigos/**
+        - id: biblioteca
+          uri: lb://biblioteca
+          predicates:
+            - Path=/biblioteca/**
+        - id: carrito
+          uri: lb://carrito
+          predicates:
+            - Path=/carrito/**
+        - id: catalogo
+          uri: lb://catalogo
+          predicates:
+            - Path=/catalogo/**
+        - id: logros
+          uri: lb://logros
+          predicates:
+            - Path=/logros/**
+        - id: pagos
+          uri: lb://pagos
+          predicates:
+            - Path=/pagos/**
+        - id: promociones
+          uri: lb://promociones
+          predicates:
+            - Path=/promociones/**
+        - id: resenas
+          uri: lb://resenas
+          predicates:
+            - Path=/resenas/**
+        - id: soporte
+          uri: lb://soporte
+          predicates:
+            - Path=/soporte/**
+        - id: usuarios
+          uri: lb://usuarios
+          predicates:
+            - Path=/usuarios/**
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eureka-server:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true

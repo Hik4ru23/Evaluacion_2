@@ -1,8 +1,9 @@
-C:\Users\gonza\Downloads\Evaluacion_2-main (1)\Evaluacion_2-main\staem\catalogo\src\main\java\com\eva2\staem\catalogo\CatalogoApplication.java
-C:\Users\gonza\Downloads\Evaluacion_2-main (1)\Evaluacion_2-main\staem\catalogo\src\main\java\com\eva2\staem\catalogo\controller\CatalogoController.java
-C:\Users\gonza\Downloads\Evaluacion_2-main (1)\Evaluacion_2-main\staem\catalogo\src\main\java\com\eva2\staem\catalogo\controller\CatalogoExceptionHandler.java
-C:\Users\gonza\Downloads\Evaluacion_2-main (1)\Evaluacion_2-main\staem\catalogo\src\main\java\com\eva2\staem\catalogo\dto\JuegoRequestDTO.java
-C:\Users\gonza\Downloads\Evaluacion_2-main (1)\Evaluacion_2-main\staem\catalogo\src\main\java\com\eva2\staem\catalogo\dto\JuegoResponseDTO.java
-C:\Users\gonza\Downloads\Evaluacion_2-main (1)\Evaluacion_2-main\staem\catalogo\src\main\java\com\eva2\staem\catalogo\model\Juego.java
-C:\Users\gonza\Downloads\Evaluacion_2-main (1)\Evaluacion_2-main\staem\catalogo\src\main\java\com\eva2\staem\catalogo\repository\JuegoRepository.java
-C:\Users\gonza\Downloads\Evaluacion_2-main (1)\Evaluacion_2-main\staem\catalogo\src\main\java\com\eva2\staem\catalogo\service\CatalogoService.java
+C:\Users\gonza\OneDrive\Escritorio\Evaluacion_2-main\staem\catalogo\src\main\java\com\eva2\staem\catalogo\CatalogoApplication.java
+C:\Users\gonza\OneDrive\Escritorio\Evaluacion_2-main\staem\catalogo\src\main\java\com\eva2\staem\catalogo\controller\CatalogoController.java
+C:\Users\gonza\OneDrive\Escritorio\Evaluacion_2-main\staem\catalogo\src\main\java\com\eva2\staem\catalogo\controller\CatalogoExceptionHandler.java
+C:\Users\gonza\OneDrive\Escritorio\Evaluacion_2-main\staem\catalogo\src\main\java\com\eva2\staem\catalogo\dto\JuegoRequestDTO.java
+C:\Users\gonza\OneDrive\Escritorio\Evaluacion_2-main\staem\catalogo\src\main\java\com\eva2\staem\catalogo\dto\JuegoResponseDTO.java
+C:\Users\gonza\OneDrive\Escritorio\Evaluacion_2-main\staem\catalogo\src\main\java\com\eva2\staem\catalogo\model\Juego.java
+C:\Users\gonza\OneDrive\Escritorio\Evaluacion_2-main\staem\catalogo\src\main\java\com\eva2\staem\catalogo\repository\JuegoRepository.java
+C:\Users\gonza\OneDrive\Escritorio\Evaluacion_2-main\staem\catalogo\src\main\java\com\eva2\staem\catalogo\service\CatalogoService.java
+C:\Users\gonza\OneDrive\Escritorio\Evaluacion_2-main\staem\catalogo\src\main\java\com\eva2\staem\exception\GlobalExceptionHandler.java
