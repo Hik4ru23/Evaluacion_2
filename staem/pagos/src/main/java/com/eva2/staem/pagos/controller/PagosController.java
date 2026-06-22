@@ -31,9 +31,9 @@ public class PagosController {
         try {
             return ResponseEntity.ok(pagosService.procesarCompra(correoUsuario, request));
         } catch (IllegalArgumentException ex) {
-            log.error("Validación fallida en compra de juegos", ex);
+            log.error("ValidaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n fallida en compra de juegos", ex);
             Map<String, String> body = new HashMap<>();
-            body.put("error", "Validación");
+            body.put("error", "ValidaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n");
             body.put("message", ex.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
         } catch (Exception ex) {

@@ -12,9 +12,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class TicketResponseDTO {
     private Long id;
+    
     private Long usuarioId;
+    
     private String asunto;
+    
     private String descripcion;
+    
     private String estado;
+    
     private LocalDateTime fechaCreacion;
 }

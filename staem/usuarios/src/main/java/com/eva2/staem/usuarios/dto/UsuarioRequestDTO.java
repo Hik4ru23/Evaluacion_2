@@ -2,7 +2,6 @@ package com.eva2.staem.usuarios.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

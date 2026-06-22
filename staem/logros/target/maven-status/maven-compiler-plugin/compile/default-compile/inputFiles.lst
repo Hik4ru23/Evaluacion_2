@@ -1,0 +1,15 @@
+C:\Users\gonza\Downloads\Evaluacion_2-main (1)\Evaluacion_2-main\staem\logros\src\main\java\com\eva2\staem\config\WebClientConfig.java
+C:\Users\gonza\Downloads\Evaluacion_2-main (1)\Evaluacion_2-main\staem\logros\src\main\java\com\eva2\staem\exception\GlobalExceptionHandler.java
+C:\Users\gonza\Downloads\Evaluacion_2-main (1)\Evaluacion_2-main\staem\logros\src\main\java\com\eva2\staem\logros\client\UsuariosClient.java
+C:\Users\gonza\Downloads\Evaluacion_2-main (1)\Evaluacion_2-main\staem\logros\src\main\java\com\eva2\staem\logros\controller\LogrosController.java
+C:\Users\gonza\Downloads\Evaluacion_2-main (1)\Evaluacion_2-main\staem\logros\src\main\java\com\eva2\staem\logros\dto\LogroDisponibleRequestDTO.java
+C:\Users\gonza\Downloads\Evaluacion_2-main (1)\Evaluacion_2-main\staem\logros\src\main\java\com\eva2\staem\logros\dto\LogroDisponibleResponseDTO.java
+C:\Users\gonza\Downloads\Evaluacion_2-main (1)\Evaluacion_2-main\staem\logros\src\main\java\com\eva2\staem\logros\dto\LogroRequestDTO.java
+C:\Users\gonza\Downloads\Evaluacion_2-main (1)\Evaluacion_2-main\staem\logros\src\main\java\com\eva2\staem\logros\dto\LogroResponseDTO.java
+C:\Users\gonza\Downloads\Evaluacion_2-main (1)\Evaluacion_2-main\staem\logros\src\main\java\com\eva2\staem\logros\LogrosApplication.java
+C:\Users\gonza\Downloads\Evaluacion_2-main (1)\Evaluacion_2-main\staem\logros\src\main\java\com\eva2\staem\logros\model\Logro.java
+C:\Users\gonza\Downloads\Evaluacion_2-main (1)\Evaluacion_2-main\staem\logros\src\main\java\com\eva2\staem\logros\model\LogroDisponible.java
+C:\Users\gonza\Downloads\Evaluacion_2-main (1)\Evaluacion_2-main\staem\logros\src\main\java\com\eva2\staem\logros\repository\LogrosDisponiblesRepository.java
+C:\Users\gonza\Downloads\Evaluacion_2-main (1)\Evaluacion_2-main\staem\logros\src\main\java\com\eva2\staem\logros\repository\LogrosRepository.java
+C:\Users\gonza\Downloads\Evaluacion_2-main (1)\Evaluacion_2-main\staem\logros\src\main\java\com\eva2\staem\logros\service\LogrosService.java
+C:\Users\gonza\Downloads\Evaluacion_2-main (1)\Evaluacion_2-main\staem\logros\src\main\java\com\eva2\staem\usuarios\dto\UsuarioResponseDTO.java

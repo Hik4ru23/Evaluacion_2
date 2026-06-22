@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
+
+
+
 @RestController
 @RequestMapping("/api/biblioteca")
 @RequiredArgsConstructor
@@ -20,6 +23,7 @@ public class BibliotecaController {
 
     private static final Logger log = LoggerFactory.getLogger(BibliotecaController.class);
     private final BibliotecaService bibliotecaService;
+
 
     @PostMapping("/agregar")
     public ResponseEntity<?> agregarJuegos(@Valid @RequestBody BibliotecaRequestDTO request) {
@@ -40,6 +44,7 @@ public class BibliotecaController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
         }
     }
+
 
     @GetMapping("/usuario/{usuarioId}")
     public ResponseEntity<?> listarPorUsuario(@PathVariable Long usuarioId) {
