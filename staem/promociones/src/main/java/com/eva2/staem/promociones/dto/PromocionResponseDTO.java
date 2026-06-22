@@ -12,8 +12,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class PromocionResponseDTO {
     private Long id;
+    
     private Long juegoId;
+    
     private Double porcentajeDescuento;
+    
     private LocalDateTime fechaInicio;
+    
     private LocalDateTime fechaFin;
 }

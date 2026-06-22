@@ -1,0 +1,26 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eureka-server:8761/eureka/
+server:
+  port: 8083
+spring:
+  application:
+    name: catalogo
+  datasource:
+    password: 2zWED9Au8Kz76S7X
+    url: jdbc:postgresql://aws-1-us-west-1.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0
+    username: postgres.bsqmacefyronbhcmjlri
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs

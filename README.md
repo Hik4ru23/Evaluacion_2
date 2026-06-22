@@ -121,6 +121,7 @@ El sistema garantiza la **autonomía de datos**. Cada microservicio cuenta con s
 ---
 
 ## Pasos para Ejecutar
+<<<<<<< HEAD
 
 ### 1. Requisitos Previos
 * Java 21.
@@ -149,3 +150,9 @@ cd staem/usuarios
 ```
 *(Repite el proceso para los 10 microservicios de manera secuencial).*
 >>>>>>> 42cb8d1616495ffe38cd48ddb1887f05ccb461dd
+=======
+1. Clonar el repositorio: `git clone https://github.com/Hik4ru23/Evaluacion_2.git`
+2. Configurar las credenciales del motor de base de datos en los archivos `application.properties` de cada microservicio.
+3. Iniciar el **API Gateway**.
+4. Levantar de forma secuencial los microservicios restantes.
+>>>>>>> 8dbbc1a7ca245f7006020b7d00489c387c5b8d3c
