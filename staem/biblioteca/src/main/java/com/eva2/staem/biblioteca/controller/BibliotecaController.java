@@ -2,6 +2,10 @@ package com.eva2.staem.biblioteca.controller;
 
 import com.eva2.staem.biblioteca.dto.BibliotecaRequestDTO;
 import com.eva2.staem.biblioteca.service.BibliotecaService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -13,18 +17,21 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-
-
-
 @RestController
 @RequestMapping("/api/biblioteca")
 @RequiredArgsConstructor
+@Tag(name = "Biblioteca de Juegos", description = "Endpoints para gestionar la colección personal de videojuegos adquiridos por los usuarios")
 public class BibliotecaController {
 
     private static final Logger log = LoggerFactory.getLogger(BibliotecaController.class);
     private final BibliotecaService bibliotecaService;
 
-
+    @Operation(summary = "Agregar juegos a la biblioteca", description = "Registra uno o más juegos comprados en el inventario personal del usuario. Ignora los juegos que el usuario ya posee.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Juegos agregados exitosamente"),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos o lista de juegos vacía"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     @PostMapping("/agregar")
     public ResponseEntity<?> agregarJuegos(@Valid @RequestBody BibliotecaRequestDTO request) {
         log.info("POST /api/biblioteca/agregar - Usuario: {}", request.getUsuarioId());
@@ -45,7 +52,11 @@ public class BibliotecaController {
         }
     }
 
-
+    @Operation(summary = "Obtener biblioteca por usuario", description = "Devuelve el listado completo de juegos que posee un usuario específico.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Listado obtenido correctamente"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     @GetMapping("/usuario/{usuarioId}")
     public ResponseEntity<?> listarPorUsuario(@PathVariable Long usuarioId) {
         log.info("GET /api/biblioteca/usuario/{}", usuarioId);
