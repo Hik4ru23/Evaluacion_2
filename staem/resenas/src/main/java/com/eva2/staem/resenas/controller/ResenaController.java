@@ -1,0 +1,73 @@
+package com.eva2.staem.resenas.controller;
+
+import com.eva2.staem.resenas.dto.ResenaRequestDTO;
+import com.eva2.staem.resenas.service.ResenaService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/resenas")
+@Tag(name = "Reseñas", description = "Endpoints para la gestión de valoraciones y comentarios del catálogo de juegos")
+public class ResenaController {
+
+    @Autowired
+    private ResenaService resenaService;
+
+    @Operation(summary = "Crear una nueva reseña", description = "Permite a un usuario calificar un juego y dejar un comentario detallado.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Reseña creada y guardada exitosamente"),
+            @ApiResponse(responseCode = "400", description = "Error de validación en los datos enviados"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+    @PostMapping("/crear")
+    public ResponseEntity<?> crearResena(@Valid @RequestBody ResenaRequestDTO request) {
+        try {
+            return ResponseEntity.ok(resenaService.crearResena(request));
+        } catch (RuntimeException ex) {
+            return buildErrorResponse(ex, HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            return buildErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Operation(summary = "Obtener reseñas por Juego", description = "Devuelve el listado completo de reseñas asociadas a un ID de juego específico.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Listado de reseñas obtenido correctamente"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+    @GetMapping("/juego/{juegoId}")
+    public ResponseEntity<?> obtenerResenasPorJuego(@PathVariable Long juegoId) {
+        try {
+            return ResponseEntity.ok(resenaService.obtenerResenasPorJuego(juegoId));
+        } catch (Exception ex) {
+            return buildErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Operation(summary = "Obtener reseñas por Usuario", description = "Devuelve el listado completo de reseñas creadadas por un ID de usuario específico.")
+    @ApiResponse(responseCode = "200", description = "Listado de reseñas obtenido correctamente")
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<?> obtenerResenasPorUsuario(@PathVariable Long usuarioId) {
+        try {
+            return ResponseEntity.ok(resenaService.obtenerResenasPorUsuario(usuarioId));
+        } catch (Exception ex) {
+            return buildErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private ResponseEntity<Map<String, String>> buildErrorResponse(Exception ex, HttpStatus status) {
+        Map<String, String> body = new HashMap<>();
+        body.put("error", status.is4xxClientError() ? "Validación" : "Error interno");
+        body.put("message", ex.getMessage() == null ? "Ocurrió un error" : ex.getMessage());
+        return ResponseEntity.status(status).body(body);
+    }
+}

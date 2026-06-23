@@ -1,0 +1,74 @@
+package com.eva2.staem.carrito.controller;
+
+import com.eva2.staem.carrito.dto.CarritoRequestDTO;
+import com.eva2.staem.carrito.service.CarritoService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+@RestController
+@RequestMapping("/api/carrito")
+@Tag(name = "Carrito", description = "Endpoints para la gestión del carrito de compras de los usuarios")
+public class CarritoController {
+
+    @Autowired
+    private CarritoService carritoService;
+
+    @PostMapping("/agregar")
+    @Operation(summary = "Agregar al carrito", description = "Añade un juego al carrito de compras del usuario.")
+    public ResponseEntity<?> agregarAlCarrito(@Valid @RequestBody CarritoRequestDTO request) {
+        try {
+            return ResponseEntity.ok(carritoService.agregarAlCarrito(request));
+        } catch (RuntimeException ex) {
+            return buildErrorResponse(ex, HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            return buildErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/{usuarioId}")
+    @Operation(summary = "Obtener carrito", description = "Devuelve los elementos actuales en el carrito del usuario.")
+    public ResponseEntity<?> obtenerCarrito(@PathVariable Long usuarioId) {
+        try {
+            return ResponseEntity.ok(carritoService.obtenerCarrito(usuarioId));
+        } catch (Exception ex) {
+            return buildErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/eliminar/{usuarioId}/{juegoId}")
+    @Operation(summary = "Eliminar del carrito", description = "Elimina un juego específico del carrito de un usuario.")
+    public ResponseEntity<?> eliminarDelCarrito(@PathVariable Long usuarioId, @PathVariable Long juegoId) {
+        try {
+            carritoService.eliminarDelCarrito(usuarioId, juegoId);
+            return ResponseEntity.noContent().build();
+        } catch (Exception ex) {
+            return buildErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/vaciar/{usuarioId}")
+    @Operation(summary = "Vaciar carrito", description = "Elimina todos los juegos del carrito de un usuario.")
+    public ResponseEntity<?> vaciarCarrito(@PathVariable Long usuarioId) {
+        try {
+            carritoService.vaciarCarrito(usuarioId);
+            return ResponseEntity.noContent().build();
+        } catch (Exception ex) {
+            return buildErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private ResponseEntity<Map<String, String>> buildErrorResponse(Exception ex, HttpStatus status) {
+        Map<String, String> body = new HashMap<>();
+        body.put("error", status.is4xxClientError() ? "ValidaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n" : "Error interno");
+        body.put("message", ex.getMessage() == null ? "OcurriÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³ un error" : ex.getMessage());
+        return ResponseEntity.status(status).body(body);
+    }
+}
