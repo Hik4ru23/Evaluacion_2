@@ -115,9 +115,10 @@ public class UsuariosController {
     })
     public ResponseEntity<?> buscarPorCorreo(
         @Parameter(description = "Correo electrónico del usuario", example = "gonzalo@mail.com") @PathVariable String correo) {
-        log.info("GET /api/usuarios/correo/{} - Buscando usuario", correo);
         try {
-            return ResponseEntity.ok(usuariosService.buscarPorCorreo(correo));
+            String decodedCorreo = java.net.URLDecoder.decode(correo, java.nio.charset.StandardCharsets.UTF_8);
+            log.info("GET /api/usuarios/correo/{} - Buscando usuario", decodedCorreo);
+            return ResponseEntity.ok(usuariosService.buscarPorCorreo(decodedCorreo));
         } catch (RuntimeException ex) {
             return buildErrorResponse(ex, HttpStatus.BAD_REQUEST);
         } catch (Exception ex) {

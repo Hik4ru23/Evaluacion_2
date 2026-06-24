@@ -4,7 +4,7 @@ eureka:
       defaultZone: http://eureka-server:8761/eureka/
 ms:
   usuarios:
-    url: http://localhost:8082
+    url: ${MS_USUARIOS_URL:http://localhost:8082}
 server:
   forward-headers-strategy: framework
   port: 8087
@@ -23,11 +23,8 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
 
-    path: /v3/api-docs
-
-
 springdoc:
   api-docs:
+    path: /v3/api-docs
     server:
       url: http://localhost:9090/logros
-

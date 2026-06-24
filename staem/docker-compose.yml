@@ -7,6 +7,8 @@ services:
       - ./api-gateway/src/main/resources/application.yml:/app/config/application.yml
     ports:
       - "9090:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
     networks:
       - staem-network
     depends_on:

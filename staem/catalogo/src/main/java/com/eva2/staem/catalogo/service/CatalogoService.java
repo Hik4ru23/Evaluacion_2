@@ -23,13 +23,11 @@ public class CatalogoService {
     public JuegoResponseDTO agregarJuego(JuegoRequestDTO dto) {
         log.info("agregarJuego: {}", dto.getTitulo());
 
-        // Evitar títulos duplicados en el catálogo
         if (juegoRepository.existsByTituloIgnoreCase(dto.getTitulo())) {
             log.warn("Titulo de juego duplicado: {}", dto.getTitulo());
             throw new IllegalArgumentException("Ya existe un juego con el titulo: " + dto.getTitulo());
         }
 
-        // La disponibilidad se calcula automáticamente según el stock
         Juego juego = Juego.builder()
                 .titulo(dto.getTitulo())
                 .descripcion(dto.getDescripcion())

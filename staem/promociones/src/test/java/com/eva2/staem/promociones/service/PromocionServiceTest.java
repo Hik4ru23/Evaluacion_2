@@ -29,7 +29,6 @@ public class PromocionServiceTest {
 
     @Test
     void crearPromocion_FlujoExitoso_RetornaPromocionResponseDTO() {
-        // GIVEN
         PromocionRequestDTO request = new PromocionRequestDTO();
         request.setJuegoId(10L);
         request.setPorcentajeDescuento(50.0);
@@ -46,10 +45,8 @@ public class PromocionServiceTest {
 
         when(promocionRepository.save(any(Promocion.class))).thenReturn(promocionSimulada);
 
-        // WHEN
         PromocionResponseDTO response = promocionService.crearPromocion(request);
 
-        // THEN
         assertNotNull(response);
         assertEquals(1L, response.getId());
         assertEquals(50.0, response.getPorcentajeDescuento());
@@ -58,17 +55,14 @@ public class PromocionServiceTest {
 
     @Test
     void obtenerPromocionesPorJuego_ConDatos_RetornaListaDeDTOs() {
-        // GIVEN
         Long juegoId = 10L;
         Promocion promo1 = Promocion.builder().id(1L).juegoId(juegoId).porcentajeDescuento(20.0).build();
         Promocion promo2 = Promocion.builder().id(2L).juegoId(juegoId).porcentajeDescuento(50.0).build();
         
         when(promocionRepository.findByJuegoId(juegoId)).thenReturn(Arrays.asList(promo1, promo2));
 
-        // WHEN
         List<PromocionResponseDTO> resultado = promocionService.obtenerPromocionesPorJuego(juegoId);
 
-        // THEN
         assertNotNull(resultado);
         assertEquals(2, resultado.size());
         assertEquals(1L, resultado.get(0).getId());

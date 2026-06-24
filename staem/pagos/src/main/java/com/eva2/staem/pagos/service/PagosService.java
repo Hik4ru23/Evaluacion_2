@@ -34,7 +34,6 @@ public class PagosService {
     public PagoResponseDTO procesarCompra(String correoUsuario, CompraRequestDTO request) {
         log.info("Procesando compra para el usuario con correo: {}", correoUsuario);
 
-        // Validaciones iniciales
         if (correoUsuario == null || correoUsuario.isBlank()) {
             throw new IllegalArgumentException("El correo de usuario es obligatorio");
         }
@@ -42,12 +41,11 @@ public class PagosService {
             throw new IllegalArgumentException("Debe enviar al menos un juego para comprar");
         }
 
-        // Obtener datos del usuario desde el microservicio de usuarios
         UsuarioResponseDTO usuario;
         try {
             usuario = usuariosClient.buscarPorCorreo(correoUsuario);
         } catch (Exception ex) {
-            log.error("Error buscando usuario por correo: {}", correoUsuario, ex);
+            log.error("Error buscando usuario por correo: {} - {}", correoUsuario, ex.getMessage());
             throw new IllegalArgumentException("No se encontró el usuario con correo: " + correoUsuario);
         }
         if (usuario == null || usuario.getId() == null) {
@@ -61,7 +59,6 @@ public class PagosService {
                 .fechaTransaccion(LocalDateTime.now())
                 .build();
 
-        // Procesar cada juego: validar existencia, stock y calcular total
         for (Long juegoId : request.getJuegosIds()) {
             if (juegoId == null) {
                 throw new IllegalArgumentException("Los IDs de juegos no pueden ser nulos");
@@ -71,7 +68,7 @@ public class PagosService {
             try {
                 juego = catalogoClient.buscarPorId(juegoId);
             } catch (Exception ex) {
-                log.error("Error buscando el juego con id {}", juegoId, ex);
+                log.error("Error buscando el juego con id {} - {}", juegoId, ex.getMessage());
                 throw new IllegalArgumentException("El juego con id " + juegoId + " no existe");
             }
             if (juego == null || juego.getId() == null) {
@@ -91,32 +88,28 @@ public class PagosService {
 
         pago.setTotalPagado(total);
 
-        // Verificar saldo suficiente antes de procesar
         if (usuario.getSaldo() < total) {
             pago.setEstado("Rechazado - Saldo Insuficiente");
             pagosRepository.save(pago);
             throw new IllegalArgumentException("Saldo insuficiente. Saldo actual: " + usuario.getSaldo() + " - Total: " + total);
         }
 
-        // Descontar saldo del usuario
         try {
             usuariosClient.descontarSaldo(usuarioId, total);
         } catch (Exception ex) {
-            log.error("Error descontando saldo del usuario {}", usuarioId, ex);
+            log.error("Error descontando saldo del usuario {} - {}", usuarioId, ex.getMessage());
             throw new IllegalArgumentException("No se pudo descontar el saldo para el usuario");
         }
 
-        // Actualizar stock de cada juego comprado
         for (Long juegoId : request.getJuegosIds()) {
             try {
                 catalogoClient.descontarStock(juegoId, 1);
             } catch (Exception ex) {
-                log.error("Error descontando stock para el juego {}", juegoId, ex);
+                log.error("Error descontando stock para el juego {} - {}", juegoId, ex.getMessage());
                 throw new IllegalArgumentException("No se pudo actualizar el stock del juego con id " + juegoId);
             }
         }
 
-        // Agregar juegos a la biblioteca del usuario
         BibliotecaRequestDTO bibliotecaReq = BibliotecaRequestDTO.builder()
                 .usuarioId(usuarioId)
                 .juegosIds(request.getJuegosIds())
@@ -124,7 +117,7 @@ public class PagosService {
         try {
             bibliotecaClient.agregarJuegos(bibliotecaReq);
         } catch (Exception ex) {
-            log.error("Error agregando juegos a la biblioteca del usuario {}", usuarioId, ex);
+            log.error("Error agregando juegos a la biblioteca del usuario {} - {}", usuarioId, ex.getMessage());
             throw new IllegalArgumentException("No se pudo agregar el/los juego(s) a la biblioteca");
         }
 

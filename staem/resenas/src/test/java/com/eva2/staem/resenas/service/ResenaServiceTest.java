@@ -29,7 +29,6 @@ public class ResenaServiceTest {
 
     @Test
     void crearResena_FlujoExitoso_RetornaResenaResponseDTO() {
-        // GIVEN (Dado un DTO de entrada y una entidad simulada)
         ResenaRequestDTO request = new ResenaRequestDTO();
         request.setUsuarioId(1L);
         request.setJuegoId(10L);
@@ -47,10 +46,8 @@ public class ResenaServiceTest {
 
         when(resenaRepository.save(any(Resena.class))).thenReturn(resenaSimulada);
 
-        // WHEN (Cuando llamamos al servicio)
         ResenaResponseDTO response = resenaService.crearResena(request);
 
-        // THEN (Entonces validamos que la respuesta sea correcta y se haya llamado al repo)
         assertNotNull(response);
         assertEquals(100L, response.getId());
         assertEquals(5, response.getCalificacion());
@@ -59,20 +56,33 @@ public class ResenaServiceTest {
 
     @Test
     void obtenerResenasPorJuego_ConDatos_RetornaListaDeDTOs() {
-        // GIVEN
         Long juegoId = 10L;
         Resena resena1 = Resena.builder().id(1L).juegoId(juegoId).calificacion(4).build();
         Resena resena2 = Resena.builder().id(2L).juegoId(juegoId).calificacion(5).build();
         
         when(resenaRepository.findByJuegoId(juegoId)).thenReturn(Arrays.asList(resena1, resena2));
 
-        // WHEN
         List<ResenaResponseDTO> resultado = resenaService.obtenerResenasPorJuego(juegoId);
 
-        // THEN
         assertNotNull(resultado);
         assertEquals(2, resultado.size());
         assertEquals(1L, resultado.get(0).getId());
         verify(resenaRepository, times(1)).findByJuegoId(juegoId);
+    }
+
+    @Test
+    void obtenerResenasPorUsuario_ConDatos_RetornaListaDeDTOs() {
+        Long usuarioId = 1L;
+        Resena resena1 = Resena.builder().id(1L).usuarioId(usuarioId).juegoId(10L).calificacion(4).build();
+        Resena resena2 = Resena.builder().id(2L).usuarioId(usuarioId).juegoId(11L).calificacion(5).build();
+        
+        when(resenaRepository.findByUsuarioId(usuarioId)).thenReturn(Arrays.asList(resena1, resena2));
+
+        List<ResenaResponseDTO> resultado = resenaService.obtenerResenasPorUsuario(usuarioId);
+
+        assertNotNull(resultado);
+        assertEquals(2, resultado.size());
+        assertEquals(1L, resultado.get(0).getId());
+        verify(resenaRepository, times(1)).findByUsuarioId(usuarioId);
     }
 }

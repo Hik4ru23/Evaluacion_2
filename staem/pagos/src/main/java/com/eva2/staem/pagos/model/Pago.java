@@ -38,7 +38,6 @@ public class Pago {
     @Builder.Default
     private List<DetallePago> detalles = new ArrayList<>();
 
-    // Método helper para mantener la relación bidireccional
     public void addDetalle(DetallePago detalle) {
         detalles.add(detalle);
         detalle.setPago(this);

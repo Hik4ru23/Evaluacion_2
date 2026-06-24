@@ -27,7 +27,6 @@ public class AmistadServiceTest {
 
     @Test
     void enviarSolicitud_NoExistePreviamente_GuardaEnEstadoPendiente() {
-        // GIVEN
         AmistadRequestDTO request = new AmistadRequestDTO();
         request.setUsuarioId(1L);
         request.setAmigoId(2L);
@@ -42,10 +41,8 @@ public class AmistadServiceTest {
         when(amistadRepository.existsByUsuarioIdAndAmigoId(1L, 2L)).thenReturn(false);
         when(amistadRepository.save(any(Amistad.class))).thenReturn(amistadGuardada);
 
-        // WHEN
         AmistadResponseDTO response = amistadService.enviarSolicitud(request);
 
-        // THEN
         assertNotNull(response);
         assertEquals("PENDIENTE", response.getEstado());
         verify(amistadRepository, times(1)).save(any(Amistad.class));
@@ -53,7 +50,6 @@ public class AmistadServiceTest {
 
     @Test
     void responderSolicitud_AccionRechazar_EliminaRegistroYRetornaNull() {
-        // GIVEN
         Long usuarioId = 1L;
         Long amigoId = 2L;
         Amistad amistadPendiente = Amistad.builder()
@@ -66,10 +62,8 @@ public class AmistadServiceTest {
         when(amistadRepository.findByUsuarioIdAndAmigoId(usuarioId, amigoId))
                 .thenReturn(Optional.of(amistadPendiente));
 
-        // WHEN
         AmistadResponseDTO response = amistadService.responderSolicitud(usuarioId, amigoId, "RECHAZAR");
 
-        // THEN
         assertNull(response);
         verify(amistadRepository, times(1)).delete(amistadPendiente);
         verify(amistadRepository, never()).save(any(Amistad.class));
@@ -77,14 +71,12 @@ public class AmistadServiceTest {
 
     @Test
     void enviarSolicitud_YaExiste_LanzaExcepcion() {
-        // GIVEN
         AmistadRequestDTO request = new AmistadRequestDTO();
         request.setUsuarioId(1L);
         request.setAmigoId(2L);
 
         when(amistadRepository.existsByUsuarioIdAndAmigoId(1L, 2L)).thenReturn(true);
 
-        // WHEN & THEN
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
             amistadService.enviarSolicitud(request);
         });

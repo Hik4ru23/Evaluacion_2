@@ -23,7 +23,18 @@ public class TicketController {
 
     @PostMapping("/crear")
     @Operation(summary = "Crear nuevo ticket", description = "Permite a un usuario crear un ticket de soporte nuevo.")
-    public ResponseEntity<?> crearTicket(@Valid @RequestBody TicketRequestDTO request) {
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Ticket creado exitosamente",
+            content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json",
+                examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\n  \"id\": 1,\n  \"usuarioId\": 100,\n  \"asunto\": \"Problema de login\",\n  \"descripcion\": \"No puedo ingresar a mi cuenta\",\n  \"estado\": \"ABIERTO\",\n  \"fechaCreacion\": \"2023-10-10T12:00:00\"\n}"))),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Error de validación",
+            content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json",
+                examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\n  \"error\": \"Validación\",\n  \"message\": \"El asunto es obligatorio\"\n}"))),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+    public ResponseEntity<?> crearTicket(
+            @io.swagger.v3.oas.annotations.Parameter(description = "Datos del ticket a crear", required = true)
+            @Valid @RequestBody TicketRequestDTO request) {
         try {
             return ResponseEntity.ok(ticketService.crearTicket(request));
         } catch (RuntimeException ex) {
@@ -35,7 +46,17 @@ public class TicketController {
 
     @GetMapping("/usuario/{usuarioId}")
     @Operation(summary = "Obtener tickets por usuario", description = "Devuelve el listado completo de tickets creados por un usuario específico.")
-    public ResponseEntity<?> obtenerTicketsPorUsuario(@PathVariable Long usuarioId) {
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Listado obtenido correctamente",
+            content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json",
+                examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "[\n  {\n    \"id\": 1,\n    \"usuarioId\": 100,\n    \"asunto\": \"Problema de login\",\n    \"descripcion\": \"No puedo ingresar a mi cuenta\",\n    \"estado\": \"ABIERTO\"\n  }\n]"))),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Error interno del servidor",
+            content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json",
+                examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\n  \"error\": \"Error interno\",\n  \"message\": \"Ocurrió un error al consultar base de datos\"\n}")))
+    })
+    public ResponseEntity<?> obtenerTicketsPorUsuario(
+            @io.swagger.v3.oas.annotations.Parameter(description = "ID del usuario cuyos tickets se desea obtener", example = "100")
+            @PathVariable Long usuarioId) {
         try {
             return ResponseEntity.ok(ticketService.obtenerTicketsPorUsuario(usuarioId));
         } catch (Exception ex) {
@@ -45,7 +66,18 @@ public class TicketController {
 
     @PutMapping("/cerrar/{ticketId}")
     @Operation(summary = "Cerrar un ticket", description = "Permite cerrar un ticket de soporte existente, marcándolo como resuelto.")
-    public ResponseEntity<?> cerrarTicket(@PathVariable Long ticketId) {
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Ticket cerrado exitosamente",
+            content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json",
+                examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\n  \"id\": 1,\n  \"usuarioId\": 100,\n  \"asunto\": \"Problema de login\",\n  \"descripcion\": \"Resuelto por el agente\",\n  \"estado\": \"CERRADO\"\n}"))),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Error al intentar cerrar",
+            content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json",
+                examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\n  \"error\": \"Validación\",\n  \"message\": \"Ticket no encontrado\"\n}"))),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+    public ResponseEntity<?> cerrarTicket(
+            @io.swagger.v3.oas.annotations.Parameter(description = "ID del ticket que se desea cerrar", example = "1")
+            @PathVariable Long ticketId) {
         try {
             return ResponseEntity.ok(ticketService.cerrarTicket(ticketId));
         } catch (RuntimeException ex) {

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import org.mindrot.jbcrypt.BCrypt;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +37,7 @@ public class UsuariosService {
                 .nickname(dto.getNickname())
                 .nombre(dto.getNombre())
                 .correo(dto.getCorreo())
-                .contrasena(dto.getContrasena())
+                .contrasena(BCrypt.hashpw(dto.getContrasena(), BCrypt.gensalt()))
                 .saldo(dto.getSaldo())
                 .build();
 
@@ -88,7 +89,7 @@ public class UsuariosService {
         usuario.setNickname(dto.getNickname());
         usuario.setNombre(dto.getNombre());
         usuario.setCorreo(dto.getCorreo());
-        usuario.setContrasena(dto.getContrasena());
+        usuario.setContrasena(BCrypt.hashpw(dto.getContrasena(), BCrypt.gensalt()));
         usuario.setSaldo(dto.getSaldo());
 
         Usuarios actualizado = usuariosRepository.save(usuario);
@@ -139,7 +140,7 @@ public class UsuariosService {
         Usuarios usuario = usuariosRepository.findByCorreo(correo)
                 .orElseThrow(() -> new IllegalArgumentException("Credenciales invalidas"));
         
-        if (!contrasena.equals(usuario.getContrasena())) {
+        if (!BCrypt.checkpw(contrasena, usuario.getContrasena())) {
             throw new IllegalArgumentException("Credenciales invalidas");
         }
         

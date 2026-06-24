@@ -35,9 +35,11 @@ public class LogrosService {
         log.info("Intento de desbloquear logro {} para usuario: {}", request.getNombre(), correoUsuario);
 
         UsuarioResponseDTO usuario = usuariosClient.buscarPorCorreo(correoUsuario);
+        if (usuario == null) {
+            throw new IllegalArgumentException("Usuario no encontrado con correo: " + correoUsuario);
+        }
         Long usuarioId = usuario.getId();
         
-        // Si el logro no existe en la tabla de disponibles, lo creamos automáticamente
         Optional<LogroDisponible> optDisponible = logrosDisponiblesRepository.findByJuegoIdAndNombre(request.getJuegoId(), request.getNombre());
         LogroDisponible disponible = optDisponible.orElseGet(() -> {
             LogroDisponible d = LogroDisponible.builder()
@@ -49,7 +51,6 @@ public class LogrosService {
             return logrosDisponiblesRepository.save(d);
         });
 
-        // Verificar que el usuario no tenga ya este logro desbloqueado
         Optional<Logro> logroExistente = logrosRepository.findByUsuarioIdAndLogroId(usuarioId, disponible.getId());
         if (logroExistente.isPresent()) {
             throw new IllegalArgumentException("El jugador ya ha desbloqueado este logro previamente");

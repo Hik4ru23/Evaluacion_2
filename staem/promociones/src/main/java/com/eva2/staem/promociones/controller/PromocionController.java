@@ -3,6 +3,9 @@ package com.eva2.staem.promociones.controller;
 import com.eva2.staem.promociones.dto.PromocionRequestDTO;
 import com.eva2.staem.promociones.service.PromocionService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,10 +26,35 @@ public class PromocionController {
     private PromocionService promocionService;
 
     @Operation(summary = "Crear una nueva promoción", description = "Asigna un porcentaje de descuento a un juego específico dentro de un rango de fechas.")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Datos de la promoción", required = true,
+            content = @Content(
+                    mediaType = "application/json",
+                    examples = @ExampleObject(
+                            name = "PromocionRequest",
+                            value = "{\n  \"juegoId\": 1,\n  \"porcentajeDescuento\": 20.0,\n  \"fechaInicio\": \"2026-07-01\",\n  \"fechaFin\": \"2026-07-31\"\n}"
+                    )
+            )
+    )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Promoción creada y guardada exitosamente"),
-            @ApiResponse(responseCode = "400", description = "Error de validación en los datos enviados"),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+            @ApiResponse(responseCode = "200", description = "Promoción creada y guardada exitosamente",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "SuccessResponse",
+                                    value = "{\n  \"id\": 1,\n  \"juegoId\": 1,\n  \"porcentajeDescuento\": 20.0,\n  \"fechaInicio\": \"2026-07-01\",\n  \"fechaFin\": \"2026-07-31\"\n}"
+                            ))),
+            @ApiResponse(responseCode = "400", description = "Error de validación en los datos enviados",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "ValidationError",
+                                    value = "{\n  \"error\": \"Validación\",\n  \"message\": \"La fecha de fin debe ser posterior a la de inicio\"\n}"
+                            ))),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "InternalError",
+                                    value = "{\n  \"error\": \"Error interno\",\n  \"message\": \"Ocurrió un error inesperado\"\n}"
+                            )))
     })
     @PostMapping("/crear")
     public ResponseEntity<?> crearPromocion(@Valid @RequestBody PromocionRequestDTO request) {
@@ -40,9 +68,20 @@ public class PromocionController {
     }
 
     @Operation(summary = "Obtener promociones por Juego", description = "Devuelve el historial de descuentos aplicados a un ID de juego específico.")
+    @Parameter(name = "juegoId", description = "ID del juego a consultar", required = true, example = "1")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Listado de promociones obtenido correctamente"),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+            @ApiResponse(responseCode = "200", description = "Listado de promociones obtenido correctamente",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "SuccessListResponse",
+                                    value = "[\n  {\n    \"id\": 1,\n    \"juegoId\": 1,\n    \"porcentajeDescuento\": 20.0,\n    \"fechaInicio\": \"2026-07-01\",\n    \"fechaFin\": \"2026-07-31\"\n  }\n]"
+                            ))),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    name = "InternalError",
+                                    value = "{\n  \"error\": \"Error interno\",\n  \"message\": \"Ocurrió un error inesperado\"\n}"
+                            )))
     })
     @GetMapping("/juego/{juegoId}")
     public ResponseEntity<?> obtenerPromocionesPorJuego(@PathVariable Long juegoId) {

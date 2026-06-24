@@ -5,6 +5,9 @@ import com.eva2.staem.biblioteca.service.BibliotecaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,12 +31,20 @@ public class BibliotecaController {
 
     @Operation(summary = "Agregar juegos a la biblioteca", description = "Registra uno o más juegos comprados en el inventario personal del usuario. Ignora los juegos que el usuario ya posee.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Juegos agregados exitosamente"),
-            @ApiResponse(responseCode = "400", description = "Datos inválidos o lista de juegos vacía"),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+            @ApiResponse(responseCode = "201", description = "Juegos agregados exitosamente",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "[\n  {\n    \"id\": 1,\n    \"usuarioId\": 1,\n    \"juegoId\": 100,\n    \"fechaAdquisicion\": \"2023-10-25T10:00:00\"\n  }\n]"))),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos o lista de juegos vacía",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n  \"error\": \"Validación\",\n  \"message\": \"Debe enviar al menos un juego para agregar\"\n}"))),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n  \"error\": \"Error interno\",\n  \"message\": \"No se pudo agregar el juego a la biblioteca\"\n}")))
     })
     @PostMapping("/agregar")
-    public ResponseEntity<?> agregarJuegos(@Valid @RequestBody BibliotecaRequestDTO request) {
+    public ResponseEntity<?> agregarJuegos(
+            @Parameter(description = "Objeto con el ID del usuario y la lista de IDs de juegos a agregar", required = true)
+            @Valid @RequestBody BibliotecaRequestDTO request) {
         log.info("POST /api/biblioteca/agregar - Usuario: {}", request.getUsuarioId());
         try {
             return ResponseEntity.status(HttpStatus.CREATED).body(bibliotecaService.agregarJuegos(request));
@@ -54,11 +65,17 @@ public class BibliotecaController {
 
     @Operation(summary = "Obtener biblioteca por usuario", description = "Devuelve el listado completo de juegos que posee un usuario específico.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Listado obtenido correctamente"),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+            @ApiResponse(responseCode = "200", description = "Listado obtenido correctamente",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "[\n  {\n    \"id\": 1,\n    \"usuarioId\": 1,\n    \"juegoId\": 100,\n    \"fechaAdquisicion\": \"2023-10-25T10:00:00\"\n  }\n]"))),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n  \"error\": \"Error interno\",\n  \"message\": \"No se pudo obtener la biblioteca del usuario\"\n}")))
     })
     @GetMapping("/usuario/{usuarioId}")
-    public ResponseEntity<?> listarPorUsuario(@PathVariable Long usuarioId) {
+    public ResponseEntity<?> listarPorUsuario(
+            @Parameter(description = "ID del usuario cuya biblioteca se desea consultar", required = true, example = "1")
+            @PathVariable Long usuarioId) {
         log.info("GET /api/biblioteca/usuario/{}", usuarioId);
         try {
             return ResponseEntity.ok(bibliotecaService.listarPorUsuario(usuarioId));

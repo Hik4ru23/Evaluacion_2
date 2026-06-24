@@ -33,7 +33,6 @@ public class BibliotecaService {
         log.info("Agregando juegos a la biblioteca del usuario: {}", request.getUsuarioId());
 
         try {
-            // Filtrar juegos que el usuario ya posee para evitar duplicados
             List<Biblioteca> nuevosJuegos = request.getJuegosIds().stream()
                     .filter(juegoId -> bibliotecaRepository.findByUsuarioIdAndJuegoId(request.getUsuarioId(), juegoId).isEmpty())
                     .map(juegoId -> Biblioteca.builder()

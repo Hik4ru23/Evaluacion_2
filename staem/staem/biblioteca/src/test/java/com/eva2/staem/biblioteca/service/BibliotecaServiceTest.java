@@ -32,12 +32,10 @@ public class BibliotecaServiceTest {
 
     @Test
     void agregarJuegos_FlujoExitoso_FiltraDuplicadosYGuarda() {
-        // GIVEN
         BibliotecaRequestDTO request = new BibliotecaRequestDTO();
         request.setUsuarioId(1L);
         request.setJuegosIds(Arrays.asList(10L, 20L));
 
-        // Simulamos que el usuario YA tiene el juego 10L, pero NO el 20L
         when(bibliotecaRepository.findByUsuarioIdAndJuegoId(1L, 10L)).thenReturn(Optional.of(new Biblioteca()));
         when(bibliotecaRepository.findByUsuarioIdAndJuegoId(1L, 20L)).thenReturn(Optional.empty());
 
@@ -50,10 +48,8 @@ public class BibliotecaServiceTest {
 
         when(bibliotecaRepository.saveAll(anyList())).thenReturn(Collections.singletonList(juegoGuardado));
 
-        // WHEN
         List<BibliotecaResponseDTO> response = bibliotecaService.agregarJuegos(request);
 
-        // THEN
         assertNotNull(response);
         assertEquals(1, response.size()); // Solo debe haber guardado 1 (el que no era duplicado)
         assertEquals(20L, response.get(0).getJuegoId());
@@ -62,12 +58,10 @@ public class BibliotecaServiceTest {
 
     @Test
     void agregarJuegos_SinJuegos_LanzaExcepcion() {
-        // GIVEN
         BibliotecaRequestDTO request = new BibliotecaRequestDTO();
         request.setUsuarioId(1L);
         request.setJuegosIds(Collections.emptyList());
 
-        // WHEN & THEN
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             bibliotecaService.agregarJuegos(request);
         });

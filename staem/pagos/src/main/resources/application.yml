@@ -4,11 +4,11 @@ eureka:
       defaultZone: http://eureka-server:8761/eureka/
 ms:
   biblioteca:
-    url: http://localhost:8084
+    url: ${MS_BIBLIOTECA_URL:http://localhost:8084}
   catalogo:
-    url: http://localhost:8083
+    url: ${MS_CATALOGO_URL:http://localhost:8083}
   usuarios:
-    url: http://localhost:8082
+    url: ${MS_USUARIOS_URL:http://localhost:8082}
 server:
   forward-headers-strategy: framework
   port: 8086
@@ -24,11 +24,8 @@ spring:
       ddl-auto: update
     show-sql: true
 
-    path: /v3/api-docs
-
-
 springdoc:
   api-docs:
+    path: /v3/api-docs
     server:
       url: http://localhost:9090/pagos
-

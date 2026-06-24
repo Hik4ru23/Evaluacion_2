@@ -1,12 +1,17 @@
-# Maven
 target/
-.mvn/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**
+!**/src/test/**
 
-# IDEs
-.vscode/
-.idea/
+### IntelliJ IDEA ###
+.idea
+*.iws
 *.iml
+*.ipr
+out/
 
-# OS
-.DS_Store
-Thumbs.db
+### VS Code ###
+.vscode/
+
+### Logs ###
+*.log

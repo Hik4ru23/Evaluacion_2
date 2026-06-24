@@ -20,11 +20,8 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
 
-    path: /v3/api-docs
-
-
 springdoc:
   api-docs:
+    path: /v3/api-docs
     server:
       url: http://localhost:9090/catalogo
-
