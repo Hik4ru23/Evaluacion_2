@@ -1,78 +1,131 @@
-# STAEM - Plataforma de Videojuegos (Microservicios)
+# 🎮 STAEM - Plataforma Distribuida de Videojuegos (Arquitectura de Microservicios)
 
-STAEM es una plataforma de distribución de videojuegos basada en una arquitectura de **10 microservicios** (Usuarios, Catálogo, Pagos, Logros, Biblioteca, etc.) coordinados a través de un **API Gateway** y registrados dinámicamente con **Netflix Eureka**.
+![Java](https://img.shields.io/badge/Java-21-orange?style=for-the-badge&logo=java)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.x-brightgreen?style=for-the-badge&logo=spring-boot)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Supabase-blue?style=for-the-badge&logo=postgresql)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker)
+![Swagger](https://img.shields.io/badge/Swagger-OpenAPI-85EA2D?style=for-the-badge&logo=swagger)
+![JUnit5](https://img.shields.io/badge/JUnit5-Mockito-25A162?style=for-the-badge)
 
-## 🚀 Requisitos Previos
+## 📖 Resumen Ejecutivo
+**STAEM** es una plataforma escalable para la gestión integral de una tienda de videojuegos digitales (inspirada en ecosistemas como Steam o PlayStation Store). El sistema resuelve de manera eficiente la administración de cuentas de usuario, transacciones comerciales complejas, gestión de catálogo dinámico y módulos de interacción social para la comunidad gamer.
 
-Asegúrate de tener instalados los siguientes programas en tu sistema antes de comenzar:
-- **Git** (para clonar el repositorio)
-- **Java 21** o superior (si deseas compilar/probar localmente sin Docker)
-- **Docker Desktop** (para levantar toda la infraestructura y base de datos)
+Este proyecto fue desarrollado bajo una estricta **Arquitectura de Microservicios**, garantizando los principios de **Alta Cohesión**, **Bajo Acoplamiento** y **Autonomía de Datos** (Database-per-service).
 
 ---
 
-## 📥 1. Cómo Descargar el Proyecto
+## 👨‍💻 Equipo de Desarrollo (Ingeniería de Software)
+* **Enrique Ignacio Gutierrez Benites**
+* **Gonzalo Yáñez Arenas**
 
-Abre tu terminal (PowerShell, CMD o Bash) y ejecuta el siguiente comando para clonar el proyecto en tu máquina local:
+---
 
+## 🏗️ Arquitectura y Tecnologías Core
+
+El sistema implementa el patrón de desacoplamiento absoluto, estructurando cada microservicio interno bajo el patrón de diseño arquitectónico **CSR (Controller - Service - Repository)** y aplicando principios de **Clean Code** (código autodocumentado, sin comentarios innecesarios, responsabilidades únicas).
+
+### Stack Tecnológico
+* **Lenguaje:** Java 21 (Aprovechando Virtual Threads y Records).
+* **Framework Backend:** Spring Boot 3.x / Spring Cloud.
+* **Persistencia:** Spring Data JPA / Hibernate.
+* **Motor de Base de Datos:** PostgreSQL (Alojado en **Supabase**, 10 bases de datos independientes).
+* **Service Discovery & Registry:** Spring Cloud Netflix Eureka.
+* **Edge Server / Enrutador:** Spring Cloud Gateway.
+* **Comunicación Inter-Servicio:** Spring Cloud OpenFeign (Llamadas REST Sincrónicas).
+* **Testing:** JUnit 5 + Mockito (Metodología *Given-When-Then*).
+* **Documentación:** Springdoc OpenAPI (Swagger UI interactivo).
+* **Contenedores:** Docker y Docker Compose.
+
+---
+
+## 🧩 Ecosistema de Infraestructura y Puertos
+
+El sistema se compone de **10 microservicios de dominio**, coordinados por un servidor de descubrimiento y un API Gateway que actúa como única puerta de entrada al ecosistema.
+
+| Componente / Microservicio | Puerto | Rol Técnico / Descripción |
+| :--- | :---: | :--- |
+| **`eureka-server`** | `8761` | **Registro Central:** Descubrimiento dinámico de instancias vivas. |
+| **`api-gateway`** | `8080` | **Edge Router:** Enrutamiento dinámico hacia los microservicios, ocultando los puertos internos. |
+| **`usuarios`** | `8081` | **Dominio:** Gestión de identidades, perfiles y control de la billetera virtual (saldo). |
+| **`catalogo`** | `8082` | **Dominio:** Vitrina global de videojuegos, gestión de stock y precios base. |
+| **`biblioteca`** | `8083` | **Dominio:** Registro inmutable de los juegos adquiridos por cada jugador. |
+| **`pagos`** | `8085` | **Dominio (Core):** Orquestador de transacciones. Valida saldos, descuenta stock y autoriza la compra. |
+| **`logros`** | `8087` | **Dominio:** Sistema de trofeos y recompensas por hitos desbloqueados. |
+| **`amigos`** | `8088` | **Dominio:** Red social interna, estados de actividad y listas de amistades. |
+| **`carrito`** | `8089` | **Dominio:** Memoria temporal de la intención de compra del cliente. |
+| **`resenas`** | `8090` | **Dominio:** Feedback de la comunidad (calificaciones por estrellas y comentarios). |
+| **`promociones`** | `8091` | **Dominio:** Lógica de inyección de descuentos temporales sobre el catálogo. |
+| **`soporte`** | `8092` | **Dominio:** Gestión de tickets de asistencia técnica para usuarios. |
+
+---
+
+## 🗄️ Modelo de Datos (DER) y Autonomía
+
+El sistema garantiza la **Autonomía Absoluta a nivel de almacenamiento**. Cada microservicio gestiona su propio esquema lógico y sus propias credenciales en la nube. **Están estrictamente prohibidos los JOINs directos entre tablas de distintos contextos acotados.** Si el microservicio de Pagos necesita datos de Usuarios, lo solicita exclusivamente a través de la red (OpenFeign).
+
+<img width="2041" height="1562" alt="Modelo de Datos" src="https://github.com/user-attachments/assets/f4e275b6-904f-4bac-a02c-4f33595a2a3f" />
+
+---
+
+## 🚀 Guía Rápida de Instalación y Despliegue (Docker)
+
+Toda la complejidad de la infraestructura ha sido automatizada mediante contenedores.
+
+### 1. Clonar el repositorio
+Abre tu terminal (Bash, PowerShell) y ejecuta:
 ```bash
 git clone https://github.com/Hik4ru23/Evaluacion_2.git
 cd Evaluacion_2/staem
 ```
 
----
-
-## 🐳 2. Cómo Compilar y Levantar el Proyecto con Docker
-
-El proyecto está dockerizado para que todos los microservicios y la red interna se configuren automáticamente. 
-
-Desde la carpeta raíz del proyecto (donde se encuentra el archivo `docker-compose.yml`), ejecuta:
-
+### 2. Levantar el Ecosistema Completo
+Asegúrate de tener el demonio de **Docker** en ejecución. Desde la carpeta raíz, ejecuta:
 ```bash
-# 1. Compilar las imágenes de todos los microservicios
+# Compila todas las imágenes Java y empaqueta los microservicios
 docker compose build
 
-# 2. Levantar los contenedores en segundo plano
+# Levanta toda la infraestructura en segundo plano
 docker compose up -d
 ```
 
-> **Nota:** La primera vez que ejecutes esto, puede tardar varios minutos mientras descarga las imágenes base de Java y compila los `.jar`.
-
-Para verificar que todo levantó correctamente, puedes abrir en tu navegador:
-- **Eureka (Registro de Servicios):** `http://localhost:8761`
-- Si todos los servicios están en verde en Eureka, el ecosistema está listo.
+### 3. Verificar la Salud del Sistema
+Abre tu navegador y entra a **Eureka Server**:
+👉 `http://localhost:8761`
+*Allí verás listados todos los microservicios (USUARIOS, PAGOS, CATALOGO, etc.) en estado "UP".*
 
 ---
 
-## 🧪 3. Cómo Ejecutar las Pruebas Unitarias (Tests)
+## 🧪 Ingeniería de Calidad: Pruebas Unitarias
 
-Cada microservicio cuenta con su propia suite de pruebas unitarias (**JUnit 5 + Mockito**) con una cobertura total de la capa de servicios (Lógica de Negocio), y que utilizan la estructura *Given-When-Then*.
+La calidad del código ha sido garantizada mediante un exhaustivo blindaje de Pruebas Unitarias. 
+* Se utilizó **JUnit 5 y Mockito**.
+* Las pruebas cubren el 100% de la capa de Servicios (Reglas de Negocio).
+* Se evalúan tanto los escenarios de éxito (Happy Path) como el manejo de excepciones (Negative Cases).
+* Se redactaron utilizando el estándar internacional **Given-When-Then** para máxima legibilidad.
 
-Para ejecutar las pruebas y comprobar que el sistema es robusto, ingresa a la carpeta de cualquier microservicio y usa el **Maven Wrapper** incluido.
+**Cómo ejecutar los tests localmente:**
+Para validar la integridad de la lógica, puedes usar el *Maven Wrapper* dentro de cualquier microservicio:
 
-**En Windows (PowerShell/CMD):**
-```cmd
-cd pagos
-.\mvnw.cmd test
-```
-
-**En Linux/Mac:**
 ```bash
+# Ejemplo para probar el sistema de Pagos
 cd pagos
-./mvnw test
+.\mvnw.cmd test    # En Windows
+./mvnw test        # En Linux/Mac
 ```
-
-> Obtendrás un mensaje de **`BUILD SUCCESS`** indicando que `Failures: 0, Errors: 0`, demostrando que el código es 100% confiable y tolerante a fallos.
+*Si la arquitectura no ha sido comprometida, el resultado será un `BUILD SUCCESS`.*
 
 ---
 
-## 📖 4. Documentación de la API (Swagger)
+## 📖 Documentación Semántica (Swagger OpenAPI)
 
-Todos los endpoints han sido documentados interactiva y semánticamente. Una vez que el sistema esté levantado mediante Docker, puedes explorar la interfaz gráfica de Swagger de cualquier microservicio añadiendo `/swagger-ui.html` a su puerto.
+Cada uno de los 10 microservicios expone su propia documentación interactiva y estandarizada bajo la especificación OpenAPI 3.0. 
+Se incluyeron descripciones ricas (`@Operation`), tipado de respuestas (`@ApiResponses`) y ejemplos JSON exactos (`@ExampleObject`) de qué enviar y qué se recibirá, incluyendo ejemplos de errores estructurales.
 
-Por ejemplo:
-- **Usuarios:** `http://localhost:8081/swagger-ui.html`
-- **Catálogo:** `http://localhost:8082/swagger-ui.html`
-- **Pagos:** `http://localhost:8083/swagger-ui.html`
+Una vez levantado el proyecto, puedes probar las APIs visualmente accediendo a las rutas:
 
-> Allí encontrarás ejemplos en formato JSON (`@ExampleObject`) para peticiones y respuestas HTTP.
+* 👤 **Usuarios:** `http://localhost:8081/swagger-ui.html`
+* 🎮 **Catálogo:** `http://localhost:8082/swagger-ui.html`
+* 💳 **Pagos:** `http://localhost:8085/swagger-ui.html`
+* 📚 **Biblioteca:** `http://localhost:8083/swagger-ui.html`
+* 🛒 **Carrito:** `http://localhost:8089/swagger-ui.html`
+* *(y así sucesivamente con cada puerto).*
