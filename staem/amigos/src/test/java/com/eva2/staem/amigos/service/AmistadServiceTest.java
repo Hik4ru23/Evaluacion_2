@@ -33,6 +33,15 @@ class AmistadServiceTest {
     @InjectMocks
     private AmistadService amistadService;
 
+    @Mock
+    private com.eva2.staem.amigos.client.UsuariosClient usuariosClient;
+
+    @org.junit.jupiter.api.BeforeEach
+    void setUpMocks() {
+        org.mockito.Mockito.lenient().when(usuariosClient.buscarPorId(org.mockito.ArgumentMatchers.anyLong()))
+            .thenReturn(new com.eva2.staem.amigos.dto.UsuarioResponseDTO());
+    }
+
     @Test
     @DisplayName("1. enviarSolicitud exitoso - debe guardar amistad con estado PENDIENTE")
     void enviarSolicitud_cuandoNoExisteSolicitud_debeGuardarConEstadoPendiente() {

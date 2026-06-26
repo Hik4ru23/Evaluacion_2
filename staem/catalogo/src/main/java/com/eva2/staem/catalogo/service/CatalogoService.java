@@ -132,6 +132,21 @@ public class CatalogoService {
         return toDTO(actualizado);
     }
 
+    public JuegoResponseDTO agregarStock(Long id, Integer cantidad) {
+        log.info("Agregando {} de stock al juego ID: {}", cantidad, id);
+        if (cantidad <= 0) {
+            throw new IllegalArgumentException("La cantidad a agregar debe ser mayor a 0");
+        }
+        Juego juego = juegoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Juego no encontrado con ID: " + id));
+        
+        juego.setStock(juego.getStock() + cantidad);
+        juego.setDisponible(juego.getStock() > 0);
+        Juego actualizado = juegoRepository.save(juego);
+        log.info("Nuevo stock del juego {}: {}", id, actualizado.getStock());
+        return toDTO(actualizado);
+    }
+
     private JuegoResponseDTO toDTO(Juego j) {
         return JuegoResponseDTO.builder()
                 .id(j.getId())

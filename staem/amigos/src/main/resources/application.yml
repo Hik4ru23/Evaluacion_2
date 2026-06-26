@@ -25,3 +25,5 @@ springdoc:
     server:
       url: http://localhost:9090/amigos
 
+  swagger-ui:
+    operations-sorter: method

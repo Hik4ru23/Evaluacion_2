@@ -27,6 +27,15 @@ public class PromocionServiceTest {
     @InjectMocks
     private PromocionService promocionService;
 
+    @Mock
+    private com.eva2.staem.promociones.client.CatalogoClient catalogoClient;
+
+    @org.junit.jupiter.api.BeforeEach
+    void setUpMocks() {
+        org.mockito.Mockito.lenient().when(catalogoClient.buscarPorId(org.mockito.ArgumentMatchers.anyLong()))
+            .thenReturn(new com.eva2.staem.promociones.dto.JuegoResponseDTO());
+    }
+
     @Test
     void crearPromocion_FlujoExitoso_RetornaPromocionResponseDTO() {
         PromocionRequestDTO request = new PromocionRequestDTO();

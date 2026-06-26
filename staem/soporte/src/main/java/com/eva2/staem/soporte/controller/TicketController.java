@@ -29,7 +29,7 @@ public class TicketController {
                 examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\n  \"id\": 1,\n  \"usuarioId\": 100,\n  \"asunto\": \"Problema de login\",\n  \"descripcion\": \"No puedo ingresar a mi cuenta\",\n  \"estado\": \"ABIERTO\",\n  \"fechaCreacion\": \"2023-10-10T12:00:00\"\n}"))),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Error de validación",
             content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json",
-                examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\n  \"error\": \"Validación\",\n  \"message\": \"El asunto es obligatorio\"\n}"))),
+                examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\n  \"error\": \"Validacion\",\n  \"message\": \"El asunto es obligatorio\"\n}"))),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     public ResponseEntity<?> crearTicket(
@@ -59,6 +59,8 @@ public class TicketController {
             @PathVariable Long usuarioId) {
         try {
             return ResponseEntity.ok(ticketService.obtenerTicketsPorUsuario(usuarioId));
+        } catch (IllegalArgumentException ex) {
+            return buildErrorResponse(ex, HttpStatus.NOT_FOUND);
         } catch (Exception ex) {
             return buildErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -72,7 +74,7 @@ public class TicketController {
                 examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\n  \"id\": 1,\n  \"usuarioId\": 100,\n  \"asunto\": \"Problema de login\",\n  \"descripcion\": \"Resuelto por el agente\",\n  \"estado\": \"CERRADO\"\n}"))),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Error al intentar cerrar",
             content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json",
-                examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\n  \"error\": \"Validación\",\n  \"message\": \"Ticket no encontrado\"\n}"))),
+                examples = @io.swagger.v3.oas.annotations.media.ExampleObject(value = "{\n  \"error\": \"Validacion\",\n  \"message\": \"Ticket no encontrado\"\n}"))),
         @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     public ResponseEntity<?> cerrarTicket(
@@ -89,7 +91,7 @@ public class TicketController {
 
     private ResponseEntity<Map<String, String>> buildErrorResponse(Exception ex, HttpStatus status) {
         Map<String, String> body = new HashMap<>();
-        body.put("error", status.is4xxClientError() ? "Validación" : "Error interno");
+        body.put("error", status.is4xxClientError() ? "Validacion" : "Error interno");
         body.put("message", ex.getMessage() == null ? "Ocurrió un error" : ex.getMessage());
         return ResponseEntity.status(status).body(body);
     }

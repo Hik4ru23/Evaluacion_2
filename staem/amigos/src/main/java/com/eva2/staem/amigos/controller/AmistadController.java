@@ -33,7 +33,7 @@ public class AmistadController {
                             examples = @ExampleObject(value = "{\n  \"id\": 1,\n  \"usuarioId\": 100,\n  \"amigoId\": 200,\n  \"estado\": \"PENDIENTE\",\n  \"fechaSolicitud\": \"2023-10-10T12:00:00\"\n}"))),
             @ApiResponse(responseCode = "400", description = "La solicitud ya existe o datos inválidos",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{\n  \"error\": \"Validación\",\n  \"message\": \"La solicitud de amistad ya existe o ya son amigos.\"\n}"))),
+                            examples = @ExampleObject(value = "{\n  \"error\": \"Validacion\",\n  \"message\": \"La solicitud de amistad ya existe o ya son amigos.\"\n}"))),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{\n  \"error\": \"Error interno\",\n  \"message\": \"Ocurrió un error inesperado\"\n}")))
@@ -58,7 +58,7 @@ public class AmistadController {
                             examples = @ExampleObject(value = "{\n  \"id\": 1,\n  \"usuarioId\": 100,\n  \"amigoId\": 200,\n  \"estado\": \"ACEPTADA\",\n  \"fechaSolicitud\": \"2023-10-10T12:00:00\"\n}"))),
             @ApiResponse(responseCode = "400", description = "Solicitud no encontrada o acción inválida",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{\n  \"error\": \"Validación\",\n  \"message\": \"Solicitud no encontrada\"\n}"))),
+                            examples = @ExampleObject(value = "{\n  \"error\": \"Validacion\",\n  \"message\": \"Solicitud no encontrada\"\n}"))),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{\n  \"error\": \"Error interno\",\n  \"message\": \"Ocurrió un error inesperado\"\n}")))
@@ -91,6 +91,8 @@ public class AmistadController {
             @Parameter(description = "ID del usuario para obtener sus amigos", required = true, example = "100") @PathVariable Long usuarioId) {
         try {
             return ResponseEntity.ok(amistadService.obtenerAmigos(usuarioId));
+        } catch (IllegalArgumentException ex) {
+            return buildErrorResponse(ex, HttpStatus.NOT_FOUND);
         } catch (Exception ex) {
             return buildErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -98,7 +100,7 @@ public class AmistadController {
 
     private ResponseEntity<Map<String, String>> buildErrorResponse(Exception ex, HttpStatus status) {
         Map<String, String> body = new HashMap<>();
-        body.put("error", status.is4xxClientError() ? "Validación" : "Error interno");
+        body.put("error", status.is4xxClientError() ? "Validacion" : "Error interno");
         body.put("message", ex.getMessage() == null ? "Ocurrió un error" : ex.getMessage());
         return ResponseEntity.status(status).body(body);
     }

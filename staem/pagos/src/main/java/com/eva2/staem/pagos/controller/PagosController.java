@@ -13,12 +13,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/pagos")
@@ -52,20 +48,6 @@ public class PagosController {
             @RequestParam String correoUsuario,
             @Valid @RequestBody CompraRequestDTO request) {
         log.info("POST /api/pagos/comprar - Usuario: {}", correoUsuario);
-        try {
-            return ResponseEntity.ok(pagosService.procesarCompra(correoUsuario, request));
-        } catch (IllegalArgumentException ex) {
-            log.error("Validacion fallida en compra de juegos", ex);
-            Map<String, String> body = new HashMap<>();
-            body.put("error", "Validacion");
-            body.put("message", ex.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
-        } catch (Exception ex) {
-            log.error("Error inesperado procesando compra de juegos", ex);
-            Map<String, String> body = new HashMap<>();
-            body.put("error", "Error interno");
-            body.put("message", "No se pudo procesar la compra en este momento");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
-        }
+        return ResponseEntity.ok(pagosService.procesarCompra(correoUsuario, request));
     }
 }

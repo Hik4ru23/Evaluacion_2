@@ -23,8 +23,18 @@ public class CatalogoClient {
     }
 
     public JuegoResponseDTO descontarStock(Long id, Integer cantidad) {
-        return this.webClient.post()
+        return this.webClient.patch()
                 .uri(uriBuilder -> uriBuilder.path("/{id}/stock")
+                        .queryParam("cantidad", cantidad)
+                        .build(id))
+                .retrieve()
+                .bodyToMono(JuegoResponseDTO.class)
+                .block();
+    }
+
+    public JuegoResponseDTO agregarStock(Long id, Integer cantidad) {
+        return this.webClient.patch()
+                .uri(uriBuilder -> uriBuilder.path("/{id}/stock/agregar")
                         .queryParam("cantidad", cantidad)
                         .build(id))
                 .retrieve()

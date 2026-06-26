@@ -32,7 +32,7 @@ public class PromocionController {
                     mediaType = "application/json",
                     examples = @ExampleObject(
                             name = "PromocionRequest",
-                            value = "{\n  \"juegoId\": 1,\n  \"porcentajeDescuento\": 20.0,\n  \"fechaInicio\": \"2026-07-01\",\n  \"fechaFin\": \"2026-07-31\"\n}"
+                            value = "{\n  \"juegoId\": 1,\n  \"porcentajeDescuento\": 20.0,\n  \"fechaInicio\": \"2026-07-01T00:00:00\",\n  \"fechaFin\": \"2026-07-31T23:59:59\"\n}"
                     )
             )
     )
@@ -41,13 +41,13 @@ public class PromocionController {
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     name = "SuccessResponse",
-                                    value = "{\n  \"id\": 1,\n  \"juegoId\": 1,\n  \"porcentajeDescuento\": 20.0,\n  \"fechaInicio\": \"2026-07-01\",\n  \"fechaFin\": \"2026-07-31\"\n}"
+                                    value = "{\n  \"id\": 1,\n  \"juegoId\": 1,\n  \"porcentajeDescuento\": 20.0,\n  \"fechaInicio\": \"2026-07-01T00:00:00\",\n  \"fechaFin\": \"2026-07-31T23:59:59\"\n}"
                             ))),
             @ApiResponse(responseCode = "400", description = "Error de validación en los datos enviados",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     name = "ValidationError",
-                                    value = "{\n  \"error\": \"Validación\",\n  \"message\": \"La fecha de fin debe ser posterior a la de inicio\"\n}"
+                                    value = "{\n  \"error\": \"Validacion\",\n  \"message\": \"La fecha de fin debe ser posterior a la de inicio\"\n}"
                             ))),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor",
                     content = @Content(mediaType = "application/json",
@@ -74,7 +74,7 @@ public class PromocionController {
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(
                                     name = "SuccessListResponse",
-                                    value = "[\n  {\n    \"id\": 1,\n    \"juegoId\": 1,\n    \"porcentajeDescuento\": 20.0,\n    \"fechaInicio\": \"2026-07-01\",\n    \"fechaFin\": \"2026-07-31\"\n  }\n]"
+                                    value = "[\n  {\n    \"id\": 1,\n    \"juegoId\": 1,\n    \"porcentajeDescuento\": 20.0,\n    \"fechaInicio\": \"2026-07-01T00:00:00\",\n    \"fechaFin\": \"2026-07-31T23:59:59\"\n  }\n]"
                             ))),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor",
                     content = @Content(mediaType = "application/json",
@@ -87,6 +87,8 @@ public class PromocionController {
     public ResponseEntity<?> obtenerPromocionesPorJuego(@PathVariable Long juegoId) {
         try {
             return ResponseEntity.ok(promocionService.obtenerPromocionesPorJuego(juegoId));
+        } catch (IllegalArgumentException ex) {
+            return buildErrorResponse(ex, HttpStatus.NOT_FOUND);
         } catch (Exception ex) {
             return buildErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -94,7 +96,7 @@ public class PromocionController {
 
     private ResponseEntity<Map<String, String>> buildErrorResponse(Exception ex, HttpStatus status) {
         Map<String, String> body = new HashMap<>();
-        body.put("error", status.is4xxClientError() ? "Validación" : "Error interno");
+        body.put("error", status.is4xxClientError() ? "Validacion" : "Error interno");
         body.put("message", ex.getMessage() == null ? "Ocurrió un error" : ex.getMessage());
         return ResponseEntity.status(status).body(body);
     }

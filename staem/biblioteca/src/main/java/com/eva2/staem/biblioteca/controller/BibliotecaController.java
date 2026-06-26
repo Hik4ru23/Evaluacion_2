@@ -36,7 +36,7 @@ public class BibliotecaController {
                             examples = @ExampleObject(value = "[\n  {\n    \"id\": 1,\n    \"usuarioId\": 1,\n    \"juegoId\": 100,\n    \"fechaAdquisicion\": \"2023-10-25T10:00:00\"\n  }\n]"))),
             @ApiResponse(responseCode = "400", description = "Datos inválidos o lista de juegos vacía",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{\n  \"error\": \"Validación\",\n  \"message\": \"Debe enviar al menos un juego para agregar\"\n}"))),
+                            examples = @ExampleObject(value = "{\n  \"error\": \"Validacion\",\n  \"message\": \"Debe enviar al menos un juego para agregar\"\n}"))),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{\n  \"error\": \"Error interno\",\n  \"message\": \"No se pudo agregar el juego a la biblioteca\"\n}")))
@@ -49,9 +49,9 @@ public class BibliotecaController {
         try {
             return ResponseEntity.status(HttpStatus.CREATED).body(bibliotecaService.agregarJuegos(request));
         } catch (IllegalArgumentException ex) {
-            log.error("Validación fallida al agregar juegos a biblioteca", ex);
+            log.error("Validacion fallida al agregar juegos a biblioteca", ex);
             Map<String, String> body = new HashMap<>();
-            body.put("error", "Validación");
+            body.put("error", "Validacion");
             body.put("message", ex.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
         } catch (Exception ex) {
@@ -79,6 +79,12 @@ public class BibliotecaController {
         log.info("GET /api/biblioteca/usuario/{}", usuarioId);
         try {
             return ResponseEntity.ok(bibliotecaService.listarPorUsuario(usuarioId));
+        } catch (IllegalArgumentException ex) {
+            log.error("Usuario no encontrado", ex);
+            Map<String, String> body = new HashMap<>();
+            body.put("error", "No encontrado");
+            body.put("message", ex.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
         } catch (Exception ex) {
             log.error("Error inesperado al listar biblioteca por usuario", ex);
             Map<String, String> body = new HashMap<>();

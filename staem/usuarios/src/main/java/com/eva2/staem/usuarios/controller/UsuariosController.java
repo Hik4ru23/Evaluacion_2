@@ -199,7 +199,7 @@ public class UsuariosController {
         }
     }
 
-    @RequestMapping(value = "/{id}/descontar", method = {RequestMethod.PATCH, RequestMethod.POST})
+    @PatchMapping("/{id}/descontar")
     @Operation(
         summary = "Descontar saldo",
         description = "Resta una cantidad del saldo del usuario. Usado internamente por otros microservicios al realizar compras."

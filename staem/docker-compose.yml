@@ -50,6 +50,9 @@ services:
     build: ./biblioteca
     ports:
       - "8084:8084"
+    environment:
+      - MS_USUARIOS_URL=http://usuarios:8082
+      - MS_CATALOGO_URL=http://catalogo:8083
     depends_on:
       eureka-server:
         condition: service_healthy
@@ -76,6 +79,7 @@ services:
       - "8087:8087"
     environment:
       - MS_USUARIOS_URL=http://usuarios:8082
+      - MS_CATALOGO_URL=http://catalogo:8083
     depends_on:
       eureka-server:
         condition: service_healthy
@@ -86,6 +90,8 @@ services:
     build: ./amigos
     ports:
       - "8088:8088"
+    environment:
+      - MS_USUARIOS_URL=http://usuarios:8082
     depends_on:
       eureka-server:
         condition: service_healthy
@@ -96,6 +102,9 @@ services:
     build: ./carrito
     ports:
       - "8089:8089"
+    environment:
+      - MS_USUARIOS_URL=http://usuarios:8082
+      - MS_CATALOGO_URL=http://catalogo:8083
     depends_on:
       eureka-server:
         condition: service_healthy
@@ -106,6 +115,9 @@ services:
     build: ./resenas
     ports:
       - "8090:8090"
+    environment:
+      - MS_USUARIOS_URL=http://usuarios:8082
+      - MS_CATALOGO_URL=http://catalogo:8083
     depends_on:
       eureka-server:
         condition: service_healthy
@@ -116,6 +128,8 @@ services:
     build: ./promociones
     ports:
       - "8091:8091"
+    environment:
+      - MS_CATALOGO_URL=http://catalogo:8083
     depends_on:
       eureka-server:
         condition: service_healthy
@@ -126,6 +140,8 @@ services:
     build: ./soporte
     ports:
       - "8092:8092"
+    environment:
+      - MS_USUARIOS_URL=http://usuarios:8082
     depends_on:
       eureka-server:
         condition: service_healthy

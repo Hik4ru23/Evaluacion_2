@@ -21,6 +21,27 @@ public class BibliotecaService {
     private static final Logger log = LoggerFactory.getLogger(BibliotecaService.class);
     private final BibliotecaRepository bibliotecaRepository;
 
+    private final com.eva2.staem.biblioteca.client.UsuariosClient usuariosClient;
+    private final com.eva2.staem.biblioteca.client.CatalogoClient catalogoClient;
+
+    private void validarUsuario(Long usuarioId) {
+        try {
+            if (usuariosClient.buscarPorId(usuarioId) == null) 
+                throw new IllegalArgumentException("Usuario no encontrado con ID: " + usuarioId);
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Usuario no encontrado con ID: " + usuarioId);
+        }
+    }
+
+    private void validarJuego(Long juegoId) {
+        try {
+            if (catalogoClient.buscarPorId(juegoId) == null) 
+                throw new IllegalArgumentException("Juego no encontrado con ID: " + juegoId);
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Juego no encontrado con ID: " + juegoId);
+        }
+    }
+
     @Transactional
     public List<BibliotecaResponseDTO> agregarJuegos(BibliotecaRequestDTO request) {
         if (request == null || request.getUsuarioId() == null) {
@@ -31,6 +52,10 @@ public class BibliotecaService {
         }
 
         log.info("Agregando juegos a la biblioteca del usuario: {}", request.getUsuarioId());
+        validarUsuario(request.getUsuarioId());
+        for (Long juegoId : request.getJuegosIds()) {
+            validarJuego(juegoId);
+        }
 
         try {
             List<Biblioteca> nuevosJuegos = request.getJuegosIds().stream()
@@ -55,6 +80,7 @@ public class BibliotecaService {
     }
 
     public List<BibliotecaResponseDTO> listarPorUsuario(Long usuarioId) {
+        validarUsuario(usuarioId);
         log.info("Listando juegos de la biblioteca para el usuario: {}", usuarioId);
         return bibliotecaRepository.findByUsuarioId(usuarioId).stream()
                 .map(this::toDTO)

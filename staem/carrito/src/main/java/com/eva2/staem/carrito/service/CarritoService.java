@@ -16,7 +16,33 @@ public class CarritoService {
     @Autowired
     private CarritoRepository carritoRepository;
 
+    @Autowired
+    private com.eva2.staem.carrito.client.UsuariosClient usuariosClient;
+
+    @Autowired
+    private com.eva2.staem.carrito.client.CatalogoClient catalogoClient;
+
+    private void validarUsuario(Long usuarioId) {
+        try {
+            if (usuariosClient.buscarPorId(usuarioId) == null) 
+                throw new IllegalArgumentException("Usuario no encontrado con ID: " + usuarioId);
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Usuario no encontrado con ID: " + usuarioId);
+        }
+    }
+
+    private void validarJuego(Long juegoId) {
+        try {
+            if (catalogoClient.buscarPorId(juegoId) == null) 
+                throw new IllegalArgumentException("Juego no encontrado con ID: " + juegoId);
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Juego no encontrado con ID: " + juegoId);
+        }
+    }
+
     public CarritoResponseDTO agregarAlCarrito(CarritoRequestDTO request) {
+        validarUsuario(request.getUsuarioId());
+        validarJuego(request.getJuegoId());
         if (carritoRepository.existsByUsuarioIdAndJuegoId(request.getUsuarioId(), request.getJuegoId())) {
             throw new RuntimeException("El juego ya esta en el carrito");
         }
@@ -31,6 +57,7 @@ public class CarritoService {
     }
 
     public List<CarritoResponseDTO> obtenerCarrito(Long usuarioId) {
+        validarUsuario(usuarioId);
         List<Carrito> items = carritoRepository.findByUsuarioId(usuarioId);
         return items.stream().map(this::mapearAResponse).collect(Collectors.toList());
     }

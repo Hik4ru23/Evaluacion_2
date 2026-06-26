@@ -25,3 +25,5 @@ springdoc:
     path: /v3/api-docs
     server:
       url: http://localhost:9090/usuarios
+  swagger-ui:
+    operations-sorter: method

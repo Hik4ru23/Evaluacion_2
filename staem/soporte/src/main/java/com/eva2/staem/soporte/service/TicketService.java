@@ -15,7 +15,20 @@ public class TicketService {
     @Autowired
     private TicketRepository ticketRepository;
 
+    @Autowired
+    private com.eva2.staem.soporte.client.UsuariosClient usuariosClient;
+
+    private void validarUsuario(Long usuarioId) {
+        try {
+            if (usuariosClient.buscarPorId(usuarioId) == null) 
+                throw new IllegalArgumentException("Usuario no encontrado con ID: " + usuarioId);
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Usuario no encontrado con ID: " + usuarioId);
+        }
+    }
+
     public TicketResponseDTO crearTicket(TicketRequestDTO request) {
+        validarUsuario(request.getUsuarioId());
         Ticket ticket = Ticket.builder()
                 .usuarioId(request.getUsuarioId())
                 .asunto(request.getAsunto())
@@ -27,6 +40,7 @@ public class TicketService {
     }
 
     public List<TicketResponseDTO> obtenerTicketsPorUsuario(Long usuarioId) {
+        validarUsuario(usuarioId);
         List<Ticket> tickets = ticketRepository.findByUsuarioId(usuarioId);
         return tickets.stream().map(this::mapearAResponse).collect(Collectors.toList());
     }

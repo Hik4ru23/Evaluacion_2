@@ -15,7 +15,33 @@ public class ResenaService {
     @Autowired
     private ResenaRepository resenaRepository;
 
+    @Autowired
+    private com.eva2.staem.resenas.client.UsuariosClient usuariosClient;
+
+    @Autowired
+    private com.eva2.staem.resenas.client.CatalogoClient catalogoClient;
+
+    private void validarUsuario(Long usuarioId) {
+        try {
+            if (usuariosClient.buscarPorId(usuarioId) == null) 
+                throw new IllegalArgumentException("Usuario no encontrado con ID: " + usuarioId);
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Usuario no encontrado con ID: " + usuarioId);
+        }
+    }
+
+    private void validarJuego(Long juegoId) {
+        try {
+            if (catalogoClient.buscarPorId(juegoId) == null) 
+                throw new IllegalArgumentException("Juego no encontrado con ID: " + juegoId);
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Juego no encontrado con ID: " + juegoId);
+        }
+    }
+
     public ResenaResponseDTO crearResena(ResenaRequestDTO request) {
+        validarUsuario(request.getUsuarioId());
+        validarJuego(request.getJuegoId());
         Resena resena = Resena.builder()
                 .usuarioId(request.getUsuarioId())
                 .juegoId(request.getJuegoId())
@@ -28,11 +54,13 @@ public class ResenaService {
     }
 
     public List<ResenaResponseDTO> obtenerResenasPorJuego(Long juegoId) {
+        validarJuego(juegoId);
         List<Resena> resenas = resenaRepository.findByJuegoId(juegoId);
         return resenas.stream().map(this::mapearAResponse).collect(Collectors.toList());
     }
 
     public List<ResenaResponseDTO> obtenerResenasPorUsuario(Long usuarioId) {
+        validarUsuario(usuarioId);
         List<Resena> resenas = resenaRepository.findByUsuarioId(usuarioId);
         return resenas.stream().map(this::mapearAResponse).collect(Collectors.toList());
     }

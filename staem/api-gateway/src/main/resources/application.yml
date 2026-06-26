@@ -156,4 +156,4 @@ springdoc:
         url: /soporte/v3/api-docs
       - name: usuarios
         url: /usuarios/v3/api-docs
-
+    operations-sorter: method

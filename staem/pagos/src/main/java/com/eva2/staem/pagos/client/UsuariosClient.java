@@ -31,8 +31,18 @@ public class UsuariosClient {
     }
 
     public UsuarioResponseDTO descontarSaldo(Long id, Double monto) {
-        return this.webClient.post()
+        return this.webClient.patch()
                 .uri(uriBuilder -> uriBuilder.path("/{id}/descontar")
+                        .queryParam("monto", monto)
+                        .build(id))
+                .retrieve()
+                .bodyToMono(UsuarioResponseDTO.class)
+                .block();
+    }
+
+    public UsuarioResponseDTO recargarSaldo(Long id, Double monto) {
+        return this.webClient.patch()
+                .uri(uriBuilder -> uriBuilder.path("/{id}/saldo")
                         .queryParam("monto", monto)
                         .build(id))
                 .retrieve()

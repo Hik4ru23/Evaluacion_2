@@ -15,7 +15,20 @@ public class PromocionService {
     @Autowired
     private PromocionRepository promocionRepository;
 
+    @Autowired
+    private com.eva2.staem.promociones.client.CatalogoClient catalogoClient;
+
+    private void validarJuego(Long juegoId) {
+        try {
+            if (catalogoClient.buscarPorId(juegoId) == null) 
+                throw new IllegalArgumentException("Juego no encontrado con ID: " + juegoId);
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Juego no encontrado con ID: " + juegoId);
+        }
+    }
+
     public PromocionResponseDTO crearPromocion(PromocionRequestDTO request) {
+        validarJuego(request.getJuegoId());
         Promocion promocion = Promocion.builder()
                 .juegoId(request.getJuegoId())
                 .porcentajeDescuento(request.getPorcentajeDescuento())
@@ -28,6 +41,7 @@ public class PromocionService {
     }
 
     public List<PromocionResponseDTO> obtenerPromocionesPorJuego(Long juegoId) {
+        validarJuego(juegoId);
         List<Promocion> promociones = promocionRepository.findByJuegoId(juegoId);
         return promociones.stream().map(this::mapearAResponse).collect(Collectors.toList());
     }

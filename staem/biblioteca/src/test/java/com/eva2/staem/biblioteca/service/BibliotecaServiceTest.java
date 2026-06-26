@@ -31,6 +31,20 @@ class BibliotecaServiceTest {
     @InjectMocks
     private BibliotecaService bibliotecaService;
 
+    @Mock
+    private com.eva2.staem.biblioteca.client.UsuariosClient usuariosClient;
+
+    @Mock
+    private com.eva2.staem.biblioteca.client.CatalogoClient catalogoClient;
+
+    @org.junit.jupiter.api.BeforeEach
+    void setUpMocks() {
+        org.mockito.Mockito.lenient().when(usuariosClient.buscarPorId(org.mockito.ArgumentMatchers.anyLong()))
+            .thenReturn(new com.eva2.staem.biblioteca.dto.UsuarioResponseDTO());
+        org.mockito.Mockito.lenient().when(catalogoClient.buscarPorId(org.mockito.ArgumentMatchers.anyLong()))
+            .thenReturn(new com.eva2.staem.biblioteca.dto.JuegoResponseDTO());
+    }
+
     @Test
     @DisplayName("1. agregarJuegos exitoso con un juego nuevo")
     void agregarJuegos_exitoso_juegoNuevo() {

@@ -29,6 +29,9 @@ public class TicketServiceTest {
     @InjectMocks
     private TicketService ticketService;
 
+    @Mock
+    private com.eva2.staem.soporte.client.UsuariosClient usuariosClient;
+
     private Ticket ticket1;
     private Ticket ticket2;
     private TicketRequestDTO ticketRequestDTO;
@@ -57,6 +60,9 @@ public class TicketServiceTest {
         ticketRequestDTO.setUsuarioId(100L);
         ticketRequestDTO.setAsunto("Asunto Nuevo");
         ticketRequestDTO.setDescripcion("Descripción Nueva");
+
+        org.mockito.Mockito.lenient().when(usuariosClient.buscarPorId(org.mockito.ArgumentMatchers.anyLong()))
+            .thenReturn(new com.eva2.staem.soporte.dto.UsuarioResponseDTO());
     }
 
     @Test

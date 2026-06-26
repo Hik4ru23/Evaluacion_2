@@ -36,7 +36,7 @@ public class CarritoController {
                 examples = @ExampleObject(value = "{\n  \"id\": 1,\n  \"usuarioId\": 123,\n  \"juegoId\": 456,\n  \"fechaAgregado\": \"2023-10-10T12:00:00\"\n}"))),
         @ApiResponse(responseCode = "400", description = "Error de validación o el juego ya está en el carrito",
             content = @Content(mediaType = "application/json",
-                examples = @ExampleObject(value = "{\n  \"error\": \"Validación\",\n  \"message\": \"El juego ya esta en el carrito\"\n}"))),
+                examples = @ExampleObject(value = "{\n  \"error\": \"Validacion\",\n  \"message\": \"El juego ya esta en el carrito\"\n}"))),
         @ApiResponse(responseCode = "500", description = "Error interno del servidor",
             content = @Content(mediaType = "application/json",
                 examples = @ExampleObject(value = "{\n  \"error\": \"Error interno\",\n  \"message\": \"Error al conectar a la base de datos\"\n}")))
@@ -70,6 +70,8 @@ public class CarritoController {
             @PathVariable Long usuarioId) {
         try {
             return ResponseEntity.ok(carritoService.obtenerCarrito(usuarioId));
+        } catch (IllegalArgumentException ex) {
+            return buildErrorResponse(ex, HttpStatus.NOT_FOUND);
         } catch (Exception ex) {
             return buildErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -117,7 +119,7 @@ public class CarritoController {
 
     private ResponseEntity<Map<String, String>> buildErrorResponse(Exception ex, HttpStatus status) {
         Map<String, String> body = new HashMap<>();
-        body.put("error", status.is4xxClientError() ? "Validación" : "Error interno");
+        body.put("error", status.is4xxClientError() ? "Validacion" : "Error interno");
         body.put("message", ex.getMessage() == null ? "Ocurrió un error" : ex.getMessage());
         return ResponseEntity.status(status).body(body);
     }

@@ -13,7 +13,21 @@ public class AmistadService {
     @Autowired
     private AmistadRepository amistadRepository;
 
+    @Autowired
+    private com.eva2.staem.amigos.client.UsuariosClient usuariosClient;
+
+    private void validarUsuario(Long usuarioId) {
+        try {
+            com.eva2.staem.amigos.dto.UsuarioResponseDTO usuario = usuariosClient.buscarPorId(usuarioId);
+            if (usuario == null) throw new IllegalArgumentException("Usuario no encontrado con ID: " + usuarioId);
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Usuario no encontrado con ID: " + usuarioId);
+        }
+    }
+
     public AmistadResponseDTO enviarSolicitud(AmistadRequestDTO request) {
+        validarUsuario(request.getUsuarioId());
+        validarUsuario(request.getAmigoId());
         if (amistadRepository.existsByUsuarioIdAndAmigoId(request.getUsuarioId(), request.getAmigoId())) {
             throw new RuntimeException("La solicitud de amistad ya existe o ya son amigos.");
         }
@@ -39,6 +53,7 @@ public class AmistadService {
         return mapearAResponse(actualizada);
     }
     public List<AmistadResponseDTO> obtenerAmigos(Long usuarioId) {
+        validarUsuario(usuarioId);
         List<Amistad> amistades = amistadRepository.findByUsuarioIdAndEstado(usuarioId, "ACEPTADA");
         return amistades.stream().map(this::mapearAResponse).collect(Collectors.toList());
     }

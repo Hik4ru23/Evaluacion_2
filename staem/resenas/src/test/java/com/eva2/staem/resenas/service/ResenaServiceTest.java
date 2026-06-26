@@ -24,6 +24,12 @@ public class ResenaServiceTest {
     @Mock
     private ResenaRepository resenaRepository;
 
+    @Mock
+    private com.eva2.staem.resenas.client.UsuariosClient usuariosClient;
+
+    @Mock
+    private com.eva2.staem.resenas.client.CatalogoClient catalogoClient;
+
     @InjectMocks
     private ResenaService resenaService;
 
@@ -45,6 +51,8 @@ public class ResenaServiceTest {
                 .build();
 
         when(resenaRepository.save(any(Resena.class))).thenReturn(resenaSimulada);
+        when(usuariosClient.buscarPorId(1L)).thenReturn(new com.eva2.staem.resenas.dto.UsuarioResponseDTO());
+        when(catalogoClient.buscarPorId(10L)).thenReturn(new com.eva2.staem.resenas.dto.JuegoResponseDTO());
 
         ResenaResponseDTO response = resenaService.crearResena(request);
 
@@ -61,6 +69,7 @@ public class ResenaServiceTest {
         Resena resena2 = Resena.builder().id(2L).juegoId(juegoId).calificacion(5).build();
         
         when(resenaRepository.findByJuegoId(juegoId)).thenReturn(Arrays.asList(resena1, resena2));
+        when(catalogoClient.buscarPorId(10L)).thenReturn(new com.eva2.staem.resenas.dto.JuegoResponseDTO());
 
         List<ResenaResponseDTO> resultado = resenaService.obtenerResenasPorJuego(juegoId);
 
@@ -77,6 +86,7 @@ public class ResenaServiceTest {
         Resena resena2 = Resena.builder().id(2L).usuarioId(usuarioId).juegoId(11L).calificacion(5).build();
         
         when(resenaRepository.findByUsuarioId(usuarioId)).thenReturn(Arrays.asList(resena1, resena2));
+        when(usuariosClient.buscarPorId(1L)).thenReturn(new com.eva2.staem.resenas.dto.UsuarioResponseDTO());
 
         List<ResenaResponseDTO> resultado = resenaService.obtenerResenasPorUsuario(usuarioId);
 

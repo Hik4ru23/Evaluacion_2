@@ -25,8 +25,6 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -42,6 +40,9 @@ class LogrosServiceTest {
 
     @Mock
     private UsuariosClient usuariosClient;
+
+    @Mock
+    private com.eva2.staem.logros.client.CatalogoClient catalogoClient;
 
     @InjectMocks
     private LogrosService logrosService;
@@ -65,6 +66,7 @@ class LogrosServiceTest {
                 .id(99L).usuarioId(1L).logroId(10L).desbloqueado(true).build();
 
         when(usuariosClient.buscarPorCorreo(correo)).thenReturn(usuario);
+        when(catalogoClient.buscarPorId(5L)).thenReturn(new com.eva2.staem.logros.dto.JuegoResponseDTO());
         when(logrosDisponiblesRepository.findByJuegoIdAndNombre(5L, "Primer logro"))
                 .thenReturn(Optional.of(logroDisponible));
         when(logrosRepository.findByUsuarioIdAndLogroId(1L, 10L))
@@ -102,6 +104,7 @@ class LogrosServiceTest {
                 .id(88L).usuarioId(2L).logroId(20L).desbloqueado(true).build();
 
         when(usuariosClient.buscarPorCorreo(correo)).thenReturn(usuario);
+        when(catalogoClient.buscarPorId(7L)).thenReturn(new com.eva2.staem.logros.dto.JuegoResponseDTO());
         when(logrosDisponiblesRepository.findByJuegoIdAndNombre(7L, "Nuevo logro"))
                 .thenReturn(Optional.empty());
         when(logrosDisponiblesRepository.save(any(LogroDisponible.class))).thenReturn(logroCreado);
@@ -127,6 +130,7 @@ class LogrosServiceTest {
         LogroRequestDTO request = LogroRequestDTO.builder()
                 .juegoId(1L).nombre("Logro").descripcion("D").puntosXp(50).build();
 
+        when(catalogoClient.buscarPorId(1L)).thenReturn(new com.eva2.staem.logros.dto.JuegoResponseDTO());
         when(usuariosClient.buscarPorCorreo(correo)).thenReturn(null);
 
         assertThatThrownBy(() -> logrosService.desbloquearLogro(correo, request))
@@ -152,6 +156,7 @@ class LogrosServiceTest {
                 .id(55L).usuarioId(3L).logroId(30L).desbloqueado(true).build();
 
         when(usuariosClient.buscarPorCorreo(correo)).thenReturn(usuario);
+        when(catalogoClient.buscarPorId(2L)).thenReturn(new com.eva2.staem.logros.dto.JuegoResponseDTO());
         when(logrosDisponiblesRepository.findByJuegoIdAndNombre(2L, "Logro existente"))
                 .thenReturn(Optional.of(logroDisponible));
         when(logrosRepository.findByUsuarioIdAndLogroId(3L, 30L))
@@ -176,6 +181,7 @@ class LogrosServiceTest {
         Logro logro2 = Logro.builder()
                 .id(2L).usuarioId(usuarioId).logroId(40L).desbloqueado(true).build();
 
+        when(usuariosClient.buscarPorId(usuarioId)).thenReturn(new UsuarioResponseDTO());
         when(logrosRepository.findByUsuarioId(usuarioId)).thenReturn(List.of(logro1, logro2));
         when(logrosDisponiblesRepository.findById(40L)).thenReturn(Optional.of(logroDisponible));
 
@@ -189,6 +195,7 @@ class LogrosServiceTest {
     @DisplayName("listarLogrosPorUsuario: retorna lista vacía cuando usuario no tiene logros")
     void listarLogrosPorUsuario_sinLogros_retornaListaVacia() {
         Long usuarioId = 5L;
+        when(usuariosClient.buscarPorId(usuarioId)).thenReturn(new UsuarioResponseDTO());
         when(logrosRepository.findByUsuarioId(usuarioId)).thenReturn(List.of());
 
         List<LogroResponseDTO> result = logrosService.listarLogrosPorUsuario(usuarioId);
@@ -223,6 +230,7 @@ class LogrosServiceTest {
                 .id(200L).juegoId(9L).nombre("Super Logro")
                 .descripcion("Descripción super").puntosXp(500).build();
 
+        when(catalogoClient.buscarPorId(9L)).thenReturn(new com.eva2.staem.logros.dto.JuegoResponseDTO());
         when(logrosDisponiblesRepository.save(any(LogroDisponible.class))).thenReturn(savedEntity);
 
         LogroDisponibleResponseDTO result = logrosService.crearLogroDisponible(requestDTO);

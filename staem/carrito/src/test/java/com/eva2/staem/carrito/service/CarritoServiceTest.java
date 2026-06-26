@@ -30,6 +30,20 @@ class CarritoServiceTest {
     @InjectMocks
     private CarritoService carritoService;
 
+    @Mock
+    private com.eva2.staem.carrito.client.UsuariosClient usuariosClient;
+
+    @Mock
+    private com.eva2.staem.carrito.client.CatalogoClient catalogoClient;
+
+    @org.junit.jupiter.api.BeforeEach
+    void setUpMocks() {
+        org.mockito.Mockito.lenient().when(usuariosClient.buscarPorId(org.mockito.ArgumentMatchers.anyLong()))
+            .thenReturn(new com.eva2.staem.carrito.dto.UsuarioResponseDTO());
+        org.mockito.Mockito.lenient().when(catalogoClient.buscarPorId(org.mockito.ArgumentMatchers.anyLong()))
+            .thenReturn(new com.eva2.staem.carrito.dto.JuegoResponseDTO());
+    }
+
     @Test
     @DisplayName("agregarAlCarrito - exitoso: guarda y retorna DTO")
     void agregarAlCarrito_exitoso() {

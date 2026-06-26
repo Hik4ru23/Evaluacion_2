@@ -43,7 +43,7 @@ public class LogrosController {
                             examples = @ExampleObject(value = "{ \"id\": 1, \"usuarioId\": 10, \"juegoId\": 5, \"nombre\": \"Primer Sangre\", \"puntosXp\": 100 }"))),
             @ApiResponse(responseCode = "400", description = "Error de validación o logro ya desbloqueado",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"error\": \"Validación\", \"message\": \"El jugador ya ha desbloqueado este logro previamente\" }"))),
+                            examples = @ExampleObject(value = "{ \"error\": \"Validacion\", \"message\": \"El jugador ya ha desbloqueado este logro previamente\" }"))),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{ \"error\": \"Error interno\", \"message\": \"Ocurrió un error inesperado\" }")))
@@ -76,6 +76,8 @@ public class LogrosController {
         log.info("GET /api/logros/usuario/{}", usuarioId);
         try {
             return ResponseEntity.ok(logrosService.listarLogrosPorUsuario(usuarioId));
+        } catch (IllegalArgumentException ex) {
+            return buildErrorResponse(ex, HttpStatus.NOT_FOUND);
         } catch (Exception ex) {
             return buildErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -109,7 +111,7 @@ public class LogrosController {
                             examples = @ExampleObject(value = "{ \"id\": 1, \"juegoId\": 5, \"nombre\": \"Primer Sangre\", \"descripcion\": \"Consigue tu primera baja\", \"puntosXp\": 100 }"))),
             @ApiResponse(responseCode = "400", description = "Error de validación",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{ \"error\": \"Validación\", \"message\": \"Datos incorrectos\" }"))),
+                            examples = @ExampleObject(value = "{ \"error\": \"Validacion\", \"message\": \"Datos incorrectos\" }"))),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{ \"error\": \"Error interno\", \"message\": \"Ocurrió un error\" }")))
@@ -130,7 +132,7 @@ public class LogrosController {
 
     private ResponseEntity<Map<String, String>> buildErrorResponse(Exception ex, HttpStatus status) {
         Map<String, String> body = new HashMap<>();
-        body.put("error", status.is4xxClientError() ? "ValidaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n" : "Error interno");
+        body.put("error", status.is4xxClientError() ? "Validacion" : "Error interno");
         body.put("message", ex.getMessage() == null ? "OcurriÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³ un error" : ex.getMessage());
         return ResponseEntity.status(status).body(body);
     }

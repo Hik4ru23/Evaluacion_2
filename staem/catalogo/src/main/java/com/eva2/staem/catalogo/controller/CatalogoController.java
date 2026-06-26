@@ -40,7 +40,7 @@ public class CatalogoController {
                             examples = @ExampleObject(value = "{\n  \"id\": 1,\n  \"titulo\": \"The Legend of Zelda\",\n  \"descripcion\": \"Juego de aventura\",\n  \"precio\": 59.99,\n  \"genero\": \"Aventura\",\n  \"desarrollador\": \"Nintendo\",\n  \"imagenUrl\": \"http://example.com/zelda.jpg\",\n  \"stock\": 10,\n  \"disponible\": true\n}"))),
             @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos o juego duplicado",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{\n  \"error\": \"Validación\",\n  \"message\": \"Ya existe un juego con el titulo: The Legend of Zelda\"\n}"))),
+                            examples = @ExampleObject(value = "{\n  \"error\": \"Validacion\",\n  \"message\": \"Ya existe un juego con el titulo: The Legend of Zelda\"\n}"))),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     public ResponseEntity<?> agregarJuego(
@@ -100,7 +100,7 @@ public class CatalogoController {
                             examples = @ExampleObject(value = "{\n  \"id\": 1,\n  \"titulo\": \"Celeste\",\n  \"precio\": 19.99,\n  \"stock\": 5,\n  \"disponible\": true\n}"))),
             @ApiResponse(responseCode = "400", description = "Juego no encontrado",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{\n  \"error\": \"Validación\",\n  \"message\": \"No encontrado: 1\"\n}"))),
+                            examples = @ExampleObject(value = "{\n  \"error\": \"Validacion\",\n  \"message\": \"No encontrado: 1\"\n}"))),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     public ResponseEntity<?> buscarPorId(
@@ -164,7 +164,7 @@ public class CatalogoController {
                             examples = @ExampleObject(value = "{\n  \"id\": 1,\n  \"titulo\": \"The Legend of Zelda: Tears of the Kingdom\",\n  \"precio\": 69.99,\n  \"stock\": 50,\n  \"disponible\": true\n}"))),
             @ApiResponse(responseCode = "400", description = "Juego no encontrado o datos inválidos",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{\n  \"error\": \"Validación\",\n  \"message\": \"No encontrado: 1\"\n}"))),
+                            examples = @ExampleObject(value = "{\n  \"error\": \"Validacion\",\n  \"message\": \"No encontrado: 1\"\n}"))),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     public ResponseEntity<?> actualizarJuego(
@@ -188,7 +188,7 @@ public class CatalogoController {
             @ApiResponse(responseCode = "204", description = "Juego eliminado exitosamente"),
             @ApiResponse(responseCode = "400", description = "Juego no encontrado",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{\n  \"error\": \"Validación\",\n  \"message\": \"No encontrado: 1\"\n}"))),
+                            examples = @ExampleObject(value = "{\n  \"error\": \"Validacion\",\n  \"message\": \"No encontrado: 1\"\n}"))),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     public ResponseEntity<?> eliminarJuego(
@@ -205,7 +205,7 @@ public class CatalogoController {
         }
     }
 
-    @RequestMapping(value = "/{id}/stock", method = {RequestMethod.PATCH, RequestMethod.POST})
+    @PatchMapping("/{id}/stock")
     @Operation(summary = "Descontar stock", description = "Descuenta una cantidad específica del stock de un juego.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Stock descontado exitosamente",
@@ -214,7 +214,7 @@ public class CatalogoController {
                             examples = @ExampleObject(value = "{\n  \"id\": 1,\n  \"titulo\": \"Half-Life\",\n  \"stock\": 5,\n  \"disponible\": true\n}"))),
             @ApiResponse(responseCode = "400", description = "Stock insuficiente, juego no encontrado o cantidad inválida",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{\n  \"error\": \"Validación\",\n  \"message\": \"Stock insuficiente para el juego: Half-Life\"\n}"))),
+                            examples = @ExampleObject(value = "{\n  \"error\": \"Validacion\",\n  \"message\": \"Stock insuficiente para el juego: Half-Life\"\n}"))),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     public ResponseEntity<?> descontarStock(
@@ -232,9 +232,34 @@ public class CatalogoController {
         }
     }
 
+    @PatchMapping("/{id}/stock/agregar")
+    @Operation(summary = "Agregar stock", description = "Aumenta una cantidad específica del stock de un juego. Usado principalmente para compensación transaccional (Saga).")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Stock agregado exitosamente",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = JuegoResponseDTO.class),
+                            examples = @ExampleObject(value = "{\n  \"id\": 1,\n  \"titulo\": \"Half-Life\",\n  \"stock\": 10,\n  \"disponible\": true\n}"))),
+            @ApiResponse(responseCode = "400", description = "Juego no encontrado o cantidad inválida"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+    public ResponseEntity<?> agregarStock(
+            @Parameter(description = "ID del juego al que se agregará stock", required = true, example = "1")
+            @PathVariable Long id,
+            @Parameter(description = "Cantidad a agregar", required = true, example = "2")
+            @RequestParam Integer cantidad) {
+        log.info("PATCH /api/catalogo/{}/stock/agregar - Agregando {} de stock", id, cantidad);
+        try {
+            return ResponseEntity.ok(catalogoService.agregarStock(id, cantidad));
+        } catch (RuntimeException ex) {
+            return buildErrorResponse(ex, HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            return buildErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     private ResponseEntity<Map<String, String>> buildErrorResponse(Exception ex, HttpStatus status) {
         Map<String, String> body = new HashMap<>();
-        body.put("error", status.is4xxClientError() ? "Validación" : "Error interno");
+        body.put("error", status.is4xxClientError() ? "Validacion" : "Error interno");
         body.put("message", ex.getMessage() == null ? "Ocurrió un error" : ex.getMessage());
         return ResponseEntity.status(status).body(body);
     }

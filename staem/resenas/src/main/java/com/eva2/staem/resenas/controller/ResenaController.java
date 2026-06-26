@@ -35,7 +35,7 @@ public class ResenaController {
                             examples = @ExampleObject(value = "{\n  \"id\": 1,\n  \"usuarioId\": 1,\n  \"juegoId\": 10,\n  \"calificacion\": 5,\n  \"comentario\": \"Excelente juego\",\n  \"fechaResena\": \"2023-10-12T10:00:00\"\n}"))),
             @ApiResponse(responseCode = "400", description = "Error de validación en los datos enviados",
                     content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{\n  \"error\": \"Validación\",\n  \"message\": \"Calificación debe ser entre 1 y 5\"\n}"))),
+                            examples = @ExampleObject(value = "{\n  \"error\": \"Validacion\",\n  \"message\": \"Calificación debe ser entre 1 y 5\"\n}"))),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{\n  \"error\": \"Error interno\",\n  \"message\": \"Ocurrió un error inesperado\"\n}")))
@@ -68,6 +68,8 @@ public class ResenaController {
             @PathVariable Long juegoId) {
         try {
             return ResponseEntity.ok(resenaService.obtenerResenasPorJuego(juegoId));
+        } catch (IllegalArgumentException ex) {
+            return buildErrorResponse(ex, HttpStatus.NOT_FOUND);
         } catch (Exception ex) {
             return buildErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -88,6 +90,8 @@ public class ResenaController {
             @PathVariable Long usuarioId) {
         try {
             return ResponseEntity.ok(resenaService.obtenerResenasPorUsuario(usuarioId));
+        } catch (IllegalArgumentException ex) {
+            return buildErrorResponse(ex, HttpStatus.NOT_FOUND);
         } catch (Exception ex) {
             return buildErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -95,7 +99,7 @@ public class ResenaController {
 
     private ResponseEntity<Map<String, String>> buildErrorResponse(Exception ex, HttpStatus status) {
         Map<String, String> body = new HashMap<>();
-        body.put("error", status.is4xxClientError() ? "Validación" : "Error interno");
+        body.put("error", status.is4xxClientError() ? "Validacion" : "Error interno");
         body.put("message", ex.getMessage() == null ? "Ocurrió un error" : ex.getMessage());
         return ResponseEntity.status(status).body(body);
     }

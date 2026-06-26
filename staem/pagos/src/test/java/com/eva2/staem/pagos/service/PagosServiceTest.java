@@ -10,6 +10,9 @@ import com.eva2.staem.pagos.dto.PagoResponseDTO;
 import com.eva2.staem.pagos.model.Pago;
 import com.eva2.staem.pagos.repository.PagosRepository;
 import com.eva2.staem.usuarios.dto.UsuarioResponseDTO;
+import com.eva2.staem.pagos.exception.InsufficientFundsException;
+import com.eva2.staem.pagos.exception.ResourceNotFoundException;
+import com.eva2.staem.pagos.exception.TransactionFailedException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -78,7 +81,7 @@ public class PagosServiceTest {
         CompraRequestDTO request = CompraRequestDTO.builder().juegosIds(Collections.singletonList(1L)).build();
         when(usuariosClient.buscarPorCorreo(correo)).thenReturn(null);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> 
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> 
             pagosService.procesarCompra(correo, request)
         );
         assertEquals("No se encontró el usuario con correo: test@test.com", exception.getMessage());
@@ -90,7 +93,7 @@ public class PagosServiceTest {
         CompraRequestDTO request = CompraRequestDTO.builder().juegosIds(Collections.singletonList(1L)).build();
         when(usuariosClient.buscarPorCorreo(correo)).thenThrow(new RuntimeException("Error"));
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> 
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> 
             pagosService.procesarCompra(correo, request)
         );
         assertEquals("No se encontró el usuario con correo: test@test.com", exception.getMessage());
@@ -118,7 +121,7 @@ public class PagosServiceTest {
         when(usuariosClient.buscarPorCorreo(correo)).thenReturn(usuario);
         when(catalogoClient.buscarPorId(juegoId)).thenReturn(null);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> 
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> 
             pagosService.procesarCompra(correo, request)
         );
         assertEquals("El juego con id 1 no existe", exception.getMessage());
@@ -150,10 +153,10 @@ public class PagosServiceTest {
         when(usuariosClient.buscarPorCorreo(correo)).thenReturn(usuario);
         when(catalogoClient.buscarPorId(juegoId)).thenReturn(juego);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> 
+        InsufficientFundsException exception = assertThrows(InsufficientFundsException.class, () -> 
             pagosService.procesarCompra(correo, request)
         );
-        assertEquals("Saldo insuficiente. Saldo actual: 10.0 - Total: 50.0", exception.getMessage());
+        assertEquals("Saldo insuficiente. Saldo actual: 10.0 - Total a pagar: 50.0", exception.getMessage());
         verify(pagosRepository, times(1)).save(any(Pago.class));
     }
 
@@ -168,10 +171,10 @@ public class PagosServiceTest {
         when(catalogoClient.buscarPorId(juegoId)).thenReturn(juego);
         when(usuariosClient.descontarSaldo(1L, 50.0)).thenThrow(new RuntimeException("Error"));
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> 
+        TransactionFailedException exception = assertThrows(TransactionFailedException.class, () -> 
             pagosService.procesarCompra(correo, request)
         );
-        assertEquals("No se pudo descontar el saldo para el usuario", exception.getMessage());
+        assertEquals("No se pudo descontar el saldo para el usuario. Transacción cancelada.", exception.getMessage());
     }
 
     @Test
@@ -186,10 +189,11 @@ public class PagosServiceTest {
         when(usuariosClient.descontarSaldo(1L, 50.0)).thenReturn(usuario);
         when(catalogoClient.descontarStock(1L, 1)).thenThrow(new RuntimeException("Error"));
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> 
+        TransactionFailedException exception = assertThrows(TransactionFailedException.class, () -> 
             pagosService.procesarCompra(correo, request)
         );
-        assertEquals("No se pudo actualizar el stock del juego con id 1", exception.getMessage());
+        assertEquals("Fallo al actualizar el catálogo. Compensación ejecutada: Saldo devuelto al usuario.", exception.getMessage());
+        verify(usuariosClient, times(1)).recargarSaldo(1L, 50.0);
     }
 
     @Test
@@ -205,10 +209,12 @@ public class PagosServiceTest {
         when(catalogoClient.descontarStock(1L, 1)).thenReturn(juego);
         when(bibliotecaClient.agregarJuegos(any(BibliotecaRequestDTO.class))).thenThrow(new RuntimeException("Error"));
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> 
+        TransactionFailedException exception = assertThrows(TransactionFailedException.class, () -> 
             pagosService.procesarCompra(correo, request)
         );
-        assertEquals("No se pudo agregar el/los juego(s) a la biblioteca", exception.getMessage());
+        assertEquals("Fallo al registrar en la biblioteca. Compensación ejecutada: Saldo y stock devueltos.", exception.getMessage());
+        verify(usuariosClient, times(1)).recargarSaldo(1L, 50.0);
+        verify(catalogoClient, times(1)).agregarStock(1L, 1);
     }
 
     @Test

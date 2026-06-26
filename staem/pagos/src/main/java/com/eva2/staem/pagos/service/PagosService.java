@@ -7,6 +7,9 @@ import com.eva2.staem.pagos.client.CatalogoClient;
 import com.eva2.staem.pagos.client.UsuariosClient;
 import com.eva2.staem.pagos.dto.CompraRequestDTO;
 import com.eva2.staem.pagos.dto.PagoResponseDTO;
+import com.eva2.staem.pagos.exception.InsufficientFundsException;
+import com.eva2.staem.pagos.exception.ResourceNotFoundException;
+import com.eva2.staem.pagos.exception.TransactionFailedException;
 import com.eva2.staem.pagos.model.DetallePago;
 import com.eva2.staem.pagos.model.Pago;
 import com.eva2.staem.pagos.repository.PagosRepository;
@@ -46,10 +49,10 @@ public class PagosService {
             usuario = usuariosClient.buscarPorCorreo(correoUsuario);
         } catch (Exception ex) {
             log.error("Error buscando usuario por correo: {} - {}", correoUsuario, ex.getMessage());
-            throw new IllegalArgumentException("No se encontró el usuario con correo: " + correoUsuario);
+            throw new ResourceNotFoundException("No se encontró el usuario con correo: " + correoUsuario);
         }
         if (usuario == null || usuario.getId() == null) {
-            throw new IllegalArgumentException("No se encontró el usuario con correo: " + correoUsuario);
+            throw new ResourceNotFoundException("No se encontró el usuario con correo: " + correoUsuario);
         }
 
         Long usuarioId = usuario.getId();
@@ -69,10 +72,10 @@ public class PagosService {
                 juego = catalogoClient.buscarPorId(juegoId);
             } catch (Exception ex) {
                 log.error("Error buscando el juego con id {} - {}", juegoId, ex.getMessage());
-                throw new IllegalArgumentException("El juego con id " + juegoId + " no existe");
+                throw new ResourceNotFoundException("El juego con id " + juegoId + " no existe");
             }
             if (juego == null || juego.getId() == null) {
-                throw new IllegalArgumentException("El juego con id " + juegoId + " no existe");
+                throw new ResourceNotFoundException("El juego con id " + juegoId + " no existe");
             }
             if (juego.getStock() <= 0) {
                 throw new IllegalArgumentException("El juego " + juego.getTitulo() + " no tiene stock");
@@ -91,35 +94,76 @@ public class PagosService {
         if (usuario.getSaldo() < total) {
             pago.setEstado("Rechazado - Saldo Insuficiente");
             pagosRepository.save(pago);
-            throw new IllegalArgumentException("Saldo insuficiente. Saldo actual: " + usuario.getSaldo() + " - Total: " + total);
+            throw new InsufficientFundsException("Saldo insuficiente. Saldo actual: " + usuario.getSaldo() + " - Total a pagar: " + total);
         }
 
+        // ==========================================
+        // INICIO PATRÓN SAGA
+        // ==========================================
+        
+        // PASO 1: Descontar Saldo
         try {
             usuariosClient.descontarSaldo(usuarioId, total);
+            log.info("Paso 1/3 (Saga): Saldo descontado correctamente.");
         } catch (Exception ex) {
             log.error("Error descontando saldo del usuario {} - {}", usuarioId, ex.getMessage());
-            throw new IllegalArgumentException("No se pudo descontar el saldo para el usuario");
+            throw new TransactionFailedException("No se pudo descontar el saldo para el usuario. Transacción cancelada.");
         }
 
-        for (Long juegoId : request.getJuegosIds()) {
+        // PASO 2: Descontar Stock
+        for (int i = 0; i < request.getJuegosIds().size(); i++) {
+            Long juegoId = request.getJuegosIds().get(i);
             try {
                 catalogoClient.descontarStock(juegoId, 1);
+                log.info("Paso 2/3 (Saga): Stock descontado para juego ID {}", juegoId);
             } catch (Exception ex) {
                 log.error("Error descontando stock para el juego {} - {}", juegoId, ex.getMessage());
-                throw new IllegalArgumentException("No se pudo actualizar el stock del juego con id " + juegoId);
+                
+                // COMPENSACIÓN: Devolver el saldo y el stock ya descontado
+                log.warn("SAGA ROLLBACK: Fallo al actualizar stock. Iniciando compensación...");
+                try {
+                    for (int j = 0; j < i; j++) {
+                        catalogoClient.agregarStock(request.getJuegosIds().get(j), 1);
+                    }
+                    usuariosClient.recargarSaldo(usuarioId, total);
+                    log.info("SAGA ROLLBACK: Compensación exitosa (Saldo y stock devueltos).");
+                } catch (Exception rollbackEx) {
+                    log.error("SAGA ROLLBACK FALLIDO (INCONSISTENCIA CRITICA): {}", rollbackEx.getMessage());
+                }
+                
+                throw new TransactionFailedException("Fallo al actualizar el catálogo. Compensación ejecutada: Saldo devuelto al usuario.");
             }
         }
 
+        // PASO 3: Registrar en Biblioteca
         BibliotecaRequestDTO bibliotecaReq = BibliotecaRequestDTO.builder()
                 .usuarioId(usuarioId)
                 .juegosIds(request.getJuegosIds())
                 .build();
         try {
             bibliotecaClient.agregarJuegos(bibliotecaReq);
+            log.info("Paso 3/3 (Saga): Juegos agregados a la biblioteca.");
         } catch (Exception ex) {
             log.error("Error agregando juegos a la biblioteca del usuario {} - {}", usuarioId, ex.getMessage());
-            throw new IllegalArgumentException("No se pudo agregar el/los juego(s) a la biblioteca");
+            
+            // COMPENSACIÓN: Devolver stock de todos los juegos y el saldo completo
+            log.warn("SAGA ROLLBACK: Fallo al registrar en biblioteca. Iniciando compensación...");
+            try {
+                for (Long idJuego : request.getJuegosIds()) {
+                    catalogoClient.agregarStock(idJuego, 1);
+                }
+                usuariosClient.recargarSaldo(usuarioId, total);
+                log.info("SAGA ROLLBACK: Compensación exitosa (Saldo y stock devueltos).");
+            } catch (Exception rollbackEx) {
+                log.error("SAGA ROLLBACK FALLIDO (INCONSISTENCIA CRITICA): {}", rollbackEx.getMessage());
+            }
+            
+            throw new TransactionFailedException("Fallo al registrar en la biblioteca. Compensación ejecutada: Saldo y stock devueltos.");
         }
+
+        // ==========================================
+        // FIN PATRÓN SAGA
+        // ==========================================
 
         pago.setEstado("Aprobado");
         Pago guardado = pagosRepository.save(pago);

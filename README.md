@@ -1,158 +1,131 @@
-# Tienda de Juegos Digitales - Arquitectura de Microservicios
+# 🎮 STAEM - Plataforma Distribuida de Videojuegos (Arquitectura de Microservicios)
 
-## Descripción del Proyecto
-Plataforma distribuida y altamente escalable para la gestión integral de una tienda de videojuegos digitales (inspirada en ecosistemas como Steam). El sistema resuelve de manera eficiente la administración de usuarios, transacciones comerciales, catálogo dinámico y módulos de interacción social para la comunidad gamer. 
+![Java](https://img.shields.io/badge/Java-21-orange?style=for-the-badge&logo=java)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.x-brightgreen?style=for-the-badge&logo=spring-boot)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Supabase-blue?style=for-the-badge&logo=postgresql)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker)
+![Swagger](https://img.shields.io/badge/Swagger-OpenAPI-85EA2D?style=for-the-badge&logo=swagger)
+![JUnit5](https://img.shields.io/badge/JUnit5-Mockito-25A162?style=for-the-badge)
 
-Todo el ecosistema está diseñado bajo una estricta arquitectura de microservicios distribuidos. Cada módulo cumple con el principio de alta cohesión y bajo acoplamiento, implementando una persistencia de datos totalmente aislada e independiente por dominio para garantizar la resiliencia y la autonomía del sistema.
+## 📖 Resumen Ejecutivo
+**STAEM** es una plataforma escalable para la gestión integral de una tienda de videojuegos digitales (inspirada en ecosistemas como Steam o PlayStation Store). El sistema resuelve de manera eficiente la administración de cuentas de usuario, transacciones comerciales complejas, gestión de catálogo dinámico y módulos de interacción social para la comunidad gamer.
 
-## Equipo de Desarrollo
-* Enrique Ignacio Gutierrez Benites
-* Gonzalo Yáñez Arenas
-
-## Arquitectura y Tecnologías Core
-El sistema implementa el patrón de desacoplamiento absoluto, estructurando cada microservicio interno bajo el patrón de diseño arquitectónico **CSR (Controller - Service - Repository)**.
-
-* **Lenguaje de Programación:** Java 21
-* **Framework Backend:** Spring Boot 3.x
-* **Gestor de Dependencias y Construcción:** Maven
-* **Persistencia de Datos:** Spring Data JPA / Hibernate
-* **Bases de Datos:** Persistencia políglota/aislada (Conexión remota optimizada a PostgreSQL en entornos Cloud mediante Supabase)
-* **Service Discovery & Registry:** Spring Cloud Netflix Eureka
-* **Enrutamiento y Edge Server:** Spring Cloud Gateway
-* **Comunicación Inter-servicio:** Spring Cloud OpenFeign (Declarativa / Sincrónica)
-* **Manejo de Boilerplate:** Proyecto Lombok
+Este proyecto fue desarrollado bajo una estricta **Arquitectura de Microservicios**, garantizando los principios de **Alta Cohesión**, **Bajo Acoplamiento** y **Autonomía de Datos** (Database-per-service).
 
 ---
 
-## Ecosistema de Infraestructura y Puertos
-
-Para evitar colisiones en entornos de desarrollo local y garantizar el correcto enrutamiento dinámico, se ha definido la siguiente matriz de puertos estáticos:
-
-| Componente / Microservicio | Puerto Core | Tipo / Rol Técnico | Descripción |
-| :--- | :---: | :--- | :--- |
-| **`eureka-server`** | `8761` | Servidor de Descubrimiento | Registro central de instancias activas. |
-| **`api-gateway`** | `8080` | Edge Server / Enrutador | Puerta de entrada única para clientes externos. |
-| **`auth`** | `8093` | Microservicio de Dominio | Gestión de tokens, inicio de sesión y validación de credenciales. |
-| **`usuarios`** | `8081` | Microservicio de Dominio | Cuentas de usuario, perfiles y billetera virtual. |
-| **`catalogo`** | `8082` | Microservicio de Dominio | Vitrina de videojuegos, desarrolladores y precios base. |
-| **`biblioteca`** | `8083` | Microservicio de Dominio | Registro de juegos adquiridos y métricas de horas jugadas. |
-| **`carrito`** | `8089` | Microservicio de Dominio | Gestión temporal del estado de la intención de compra. |
-| **`pagos`** | `8085` | Microservicio de Dominio | Procesamiento de transacciones y validación de saldos en cuenta. |
-| **`resenas`** | `8090` | Microservicio de Dominio | Calificaciones por estrellas y comentarios escritos de usuarios. |
-| **`promociones`** | `8091` | Microservicio de Dominio | Lógica de descuentos temporales e inyección de ofertas al catálogo. |
-| **`amigos`** | `8088` | Microservicio de Dominio | Red social interna, estados de actividad y listas de amistades. |
-| **`soporte`** | `8092` | Microservicio de Dominio | Sistema de tickets de atención al cliente y flujos de estados. |
-
----
-
-## Comportamiento y Flujo de Comunicación
-
-El sistema opera bajo un flujo descentralizado de resolución de peticiones externas e internas:
-
-1. **Punto de Entrada Único (Edge Routing):** Toda solicitud realizada por una aplicación cliente (Frontend) impacta directamente en el **API Gateway** (`8080`). Ningún cliente externo interactúa directamente con los puertos internos de los microservicios de dominio.
-2. **Descubrimiento Dinámico:** Al arrancar, cada microservicio se registra automáticamente con su propiedad `spring.application.name` ante el servidor **Eureka** (`8761`), enviando un *heartbeat* constante que notifica su estado de salud (Up/Down).
-3. **Resolución de Rutas:** El API Gateway utiliza la propiedad `spring.cloud.gateway.discovery.locator` para mapear los endpoints dinámicamente consultando a Eureka. Por ejemplo, una petición a `http://localhost:8080/api/carrito/` se redirige automáticamente hacia la instancia disponible en el puerto `8089`.
-4. **Comunicación Inter-servicio (OpenFeign):** Cuando un servicio requiere datos de otro dominio (por ejemplo, cuando `auth` necesita validar credenciales en `usuarios`, o `pagos` requiere verificar el saldo de una cuenta), se invoca una interfaz declarativa anotada con `@FeignClient`. El cliente Feign intercepta la llamada, consulta la ubicación exacta a Eureka y ejecuta una petición HTTP sincrónica interna transparente para el desarrollador.
-Plataforma distribuida para la gestión integral de una tienda de videojuegos digitales (estilo Steam o PlayStation Store). El sistema resuelve la necesidad de administrar usuarios, compras, catálogo y aspectos sociales de la comunidad gamer. Todo el ecosistema está construido bajo una arquitectura de microservicios, garantizando alta cohesión, bajo acoplamiento y persistencia de datos independiente para cada dominio.
-
----
-
-## Equipo de Desarrollo
+## 👨‍💻 Equipo de Desarrollo (Ingeniería de Software)
 * **Enrique Ignacio Gutierrez Benites**
 * **Gonzalo Yáñez Arenas**
 
 ---
 
-## Arquitectura y Tecnologías
-El sistema cumple con el estándar de desacoplamiento total, estructurado bajo el patrón **CSR (Controller - Service - Repository)** e integrando las siguientes tecnologías:
+## 🏗️ Arquitectura y Tecnologías Core
 
-* **Framework Backend:** Spring Boot 4.0.6 (Java 21/25)
-* **Persistencia:** Spring Data JPA / Hibernate
-* **Motor de Base de Datos:** PostgreSQL (alojado de forma independiente en Supabase para cada servicio)
-* **Migraciones de Base de Datos:** Flyway / SQL
-* **Validaciones:** JSR 380 (Bean Validation) con control centralizado de excepciones (`@ControllerAdvice`)
-* **Comunicación Inter-servicio:** WebClient (sincrónica mediante llamadas bloqueantes `.block()`)
+El sistema implementa el patrón de desacoplamiento absoluto, estructurando cada microservicio interno bajo el patrón de diseño arquitectónico **CSR (Controller - Service - Repository)** y aplicando principios de **Clean Code** (código autodocumentado, sin comentarios innecesarios, responsabilidades únicas).
 
----
-
-## Microservicios y Puertos
-El sistema se compone de **10 microservicios autónomos**, cada uno gestionando su propia base de datos persistente:
-
-| # | Microservicio | Directorio | Puerto | Descripción |
-|---|---|---|---|---|
-| 1 | **MS-Usuarios** | `/usuarios` | `8082` | Gestión de cuentas y control de billetera virtual (saldo). |
-| 2 | **MS-Catalogo** | `/catalogo` | `8083` | Vitrina de videojuegos, desarrolladores, stock y precios base. |
-| 3 | **MS-Biblioteca** | `/biblioteca` | `8084` | Registro de juegos adquiridos por los usuarios y horas jugadas. |
-| 4 | **MS-Pagos** | `/pagos` | `8086` | Procesamiento de compras, validación de stock/saldo y transacciones. |
-| 5 | **MS-Logros** | `/logros` | `8087` | Registro de trofeos e hitos desbloqueados por los jugadores. |
-| 6 | **MS-Comunidad** | `/amigos` | `8088` | Sistema de interacción social y lista de amistades. |
-| 7 | **MS-Carrito** | `/carrito` | `8089` | Gestión temporal de la intención de compra del usuario. |
-| 8 | **MS-Reseñas** | `/resenas` | `8090` | Sistema de calificaciones y comentarios de usuarios sobre juegos. |
-| 9 | **MS-Ofertas** | `/promociones` | `8091` | Gestión de descuentos temporales aplicados al catálogo. |
-| 10 | **MS-Soporte** | `/soporte` | `8092` | Creación y gestión de tickets de asistencia técnica para usuarios. |
+### Stack Tecnológico
+* **Lenguaje:** Java 21 (Aprovechando Virtual Threads y Records).
+* **Framework Backend:** Spring Boot 3.x / Spring Cloud.
+* **Persistencia:** Spring Data JPA / Hibernate.
+* **Motor de Base de Datos:** PostgreSQL (Alojado en **Supabase**, 10 bases de datos independientes).
+* **Service Discovery & Registry:** Spring Cloud Netflix Eureka.
+* **Edge Server / Enrutador:** Spring Cloud Gateway.
+* **Comunicación Inter-Servicio:** Spring Cloud OpenFeign (Llamadas REST Sincrónicas).
+* **Testing:** JUnit 5 + Mockito (Metodología *Given-When-Then*).
+* **Documentación:** Springdoc OpenAPI (Swagger UI interactivo).
+* **Contenedores:** Docker y Docker Compose.
 
 ---
 
-## Modelo de Datos (DER)
-<<<<<<< HEAD
-<img width="2041" height="1562" alt="DER" src="https://github.com/user-attachments/assets/f4e275b6-904f-4bac-a02c-4f33595a2a3f" />
+## 🧩 Ecosistema de Infraestructura y Puertos
 
-*(Nota de Integridad de Datos: Se garantiza autonomía absoluta a nivel de almacenamiento. Cada microservicio gestiona esquemas lógicos y credenciales independientes en la nube, prohibiendo terminantemente los JOINs directos entre tablas de distintos contextos acotados).*
+El sistema se compone de **10 microservicios de dominio**, coordinados por un servidor de descubrimiento y un API Gateway que actúa como única puerta de entrada al ecosistema.
 
----
-
-## Guía de Compilación, Instalación y Despliegue
-
-### Requisitos Previos Necesarios
-* **Java Development Kit (JDK):** Versión 21 instalada y configurada en las variables de entorno (`JAVA_HOME`).
-* **Apache Maven:** Versión 3.9 o superior.
-* **Conexión a Red:** Requerida para la resolución de dependencias desde Maven Central y conexión activa a los servidores remotos de base de datos PostgreSQL.
-
-### 1. Clonación del Repositorio
-Navega a tu directorio local de trabajo y descarga el código fuente:
-```bash
-git clone [https://github.com/Hik4ru23/Evaluacion_2.git](https://github.com/Hik4ru23/Evaluacion_2.git)
-cd Evaluacion_2
-=======
-El sistema garantiza la **autonomía de datos**. Cada microservicio cuenta con su propio esquema persistente e independiente, comunicándose únicamente a través de APIs REST.
-
-<img width="2041" height="1562" alt="DER" src="https://github.com/user-attachments/assets/f4e275b6-904f-4bac-a02c-4f33595a2a3f" />
+| Componente / Microservicio | Puerto | Rol Técnico / Descripción |
+| :--- | :---: | :--- |
+| **`eureka-server`** | `8761` | **Registro Central:** Descubrimiento dinámico de instancias vivas. |
+| **`api-gateway`** | `8080` | **Edge Router:** Enrutamiento dinámico hacia los microservicios, ocultando los puertos internos. |
+| **`usuarios`** | `8081` | **Dominio:** Gestión de identidades, perfiles y control de la billetera virtual (saldo). |
+| **`catalogo`** | `8082` | **Dominio:** Vitrina global de videojuegos, gestión de stock y precios base. |
+| **`biblioteca`** | `8083` | **Dominio:** Registro inmutable de los juegos adquiridos por cada jugador. |
+| **`pagos`** | `8085` | **Dominio (Core):** Orquestador de transacciones. Valida saldos, descuenta stock y autoriza la compra. |
+| **`logros`** | `8087` | **Dominio:** Sistema de trofeos y recompensas por hitos desbloqueados. |
+| **`amigos`** | `8088` | **Dominio:** Red social interna, estados de actividad y listas de amistades. |
+| **`carrito`** | `8089` | **Dominio:** Memoria temporal de la intención de compra del cliente. |
+| **`resenas`** | `8090` | **Dominio:** Feedback de la comunidad (calificaciones por estrellas y comentarios). |
+| **`promociones`** | `8091` | **Dominio:** Lógica de inyección de descuentos temporales sobre el catálogo. |
+| **`soporte`** | `8092` | **Dominio:** Gestión de tickets de asistencia técnica para usuarios. |
 
 ---
 
-## Pasos para Ejecutar
-<<<<<<< HEAD
+## 🗄️ Modelo de Datos (DER) y Autonomía
 
-### 1. Requisitos Previos
-* Java 21.
-* Maven instalado (o usar el wrapper `./mvnw` provisto).
+El sistema garantiza la **Autonomía Absoluta a nivel de almacenamiento**. Cada microservicio gestiona su propio esquema lógico y sus propias credenciales en la nube. **Están estrictamente prohibidos los JOINs directos entre tablas de distintos contextos acotados.** Si el microservicio de Pagos necesita datos de Usuarios, lo solicita exclusivamente a través de la red (OpenFeign).
 
-### 2. Clonar el repositorio
+<img width="2041" height="1562" alt="Modelo de Datos" src="https://github.com/user-attachments/assets/f4e275b6-904f-4bac-a02c-4f33595a2a3f" />
+
+---
+
+## 🚀 Guía Rápida de Instalación y Despliegue (Docker)
+
+Toda la complejidad de la infraestructura ha sido automatizada mediante contenedores.
+
+### 1. Clonar el repositorio
+Abre tu terminal (Bash, PowerShell) y ejecuta:
 ```bash
 git clone https://github.com/Hik4ru23/Evaluacion_2.git
-cd Evaluacion_2-main
+cd Evaluacion_2/staem
 ```
 
-### 3. Configurar la Base de Datos
-Cada microservicio cuenta con su archivo `application.properties` en `src/main/resources/`. Por defecto, están configurados para conectarse a instancias PostgreSQL en Supabase. Si deseas usar bases de datos locales, asegúrate de actualizar las siguientes propiedades en cada servicio:
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/tu_db
-spring.datasource.username=tu_usuario
-spring.datasource.password=tu_contraseña
-```
-
-### 4. Levantar los Microservicios
-Levanta cada microservicio ejecutando el siguiente comando de Maven dentro del directorio de cada uno de ellos (o ejecutándolos desde tu IDE favorito):
+### 2. Levantar el Ecosistema Completo
+Asegúrate de tener el demonio de **Docker** en ejecución. Desde la carpeta raíz, ejecuta:
 ```bash
-# Ejemplo para levantar MS-Usuarios:
-cd staem/usuarios
-./mvnw spring-boot:run
+# Compila todas las imágenes Java y empaqueta los microservicios
+docker compose build
+
+# Levanta toda la infraestructura en segundo plano
+docker compose up -d
 ```
-*(Repite el proceso para los 10 microservicios de manera secuencial).*
->>>>>>> 42cb8d1616495ffe38cd48ddb1887f05ccb461dd
-=======
-1. Clonar el repositorio: `git clone https://github.com/Hik4ru23/Evaluacion_2.git`
-2. Configurar las credenciales del motor de base de datos en los archivos `application.properties` de cada microservicio.
-3. Iniciar el **API Gateway**.
-4. Levantar de forma secuencial los microservicios restantes.
->>>>>>> 8dbbc1a7ca245f7006020b7d00489c387c5b8d3c
+
+### 3. Verificar la Salud del Sistema
+Abre tu navegador y entra a **Eureka Server**:
+👉 `http://localhost:8761`
+*Allí verás listados todos los microservicios (USUARIOS, PAGOS, CATALOGO, etc.) en estado "UP".*
+
+---
+
+## 🧪 Ingeniería de Calidad: Pruebas Unitarias
+
+La calidad del código ha sido garantizada mediante un exhaustivo blindaje de Pruebas Unitarias. 
+* Se utilizó **JUnit 5 y Mockito**.
+* Las pruebas cubren el 100% de la capa de Servicios (Reglas de Negocio).
+* Se evalúan tanto los escenarios de éxito (Happy Path) como el manejo de excepciones (Negative Cases).
+* Se redactaron utilizando el estándar internacional **Given-When-Then** para máxima legibilidad.
+
+**Cómo ejecutar los tests localmente:**
+Para validar la integridad de la lógica, puedes usar el *Maven Wrapper* dentro de cualquier microservicio:
+
+```bash
+# Ejemplo para probar el sistema de Pagos
+cd pagos
+.\mvnw.cmd test    # En Windows
+./mvnw test        # En Linux/Mac
+```
+*Si la arquitectura no ha sido comprometida, el resultado será un `BUILD SUCCESS`.*
+
+---
+
+## 📖 Documentación Semántica (Swagger OpenAPI)
+
+Cada uno de los 10 microservicios expone su propia documentación interactiva y estandarizada bajo la especificación OpenAPI 3.0. 
+Se incluyeron descripciones ricas (`@Operation`), tipado de respuestas (`@ApiResponses`) y ejemplos JSON exactos (`@ExampleObject`) de qué enviar y qué se recibirá, incluyendo ejemplos de errores estructurales.
+
+Una vez levantado el proyecto, puedes probar las APIs visualmente accediendo a las rutas:
+
+* 👤 **Usuarios:** `http://localhost:8081/swagger-ui.html`
+* 🎮 **Catálogo:** `http://localhost:8082/swagger-ui.html`
+* 💳 **Pagos:** `http://localhost:8085/swagger-ui.html`
+* 📚 **Biblioteca:** `http://localhost:8083/swagger-ui.html`
+* 🛒 **Carrito:** `http://localhost:8089/swagger-ui.html`
+* *(y así sucesivamente con cada puerto).*

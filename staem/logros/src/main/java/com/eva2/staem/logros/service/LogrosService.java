@@ -31,10 +31,29 @@ public class LogrosService {
     
     private final LogrosDisponiblesRepository logrosDisponiblesRepository;
 
+    private final com.eva2.staem.logros.client.CatalogoClient catalogoClient;
+
+    private void validarJuego(Long juegoId) {
+        try {
+            if (catalogoClient.buscarPorId(juegoId) == null) 
+                throw new IllegalArgumentException("Juego no encontrado con ID: " + juegoId);
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Juego no encontrado con ID: " + juegoId);
+        }
+    }
+
     public LogroResponseDTO desbloquearLogro(String correoUsuario, LogroRequestDTO request) {
         log.info("Intento de desbloquear logro {} para usuario: {}", request.getNombre(), correoUsuario);
+        validarJuego(request.getJuegoId());
 
-        UsuarioResponseDTO usuario = usuariosClient.buscarPorCorreo(correoUsuario);
+        UsuarioResponseDTO usuario;
+        try {
+            usuario = usuariosClient.buscarPorCorreo(correoUsuario);
+        } catch (Exception ex) {
+            log.error("Error buscando usuario por correo en Logros: {} - {}", correoUsuario, ex.getMessage());
+            throw new IllegalArgumentException("Usuario no encontrado con correo: " + correoUsuario);
+        }
+        
         if (usuario == null) {
             throw new IllegalArgumentException("Usuario no encontrado con correo: " + correoUsuario);
         }
@@ -70,6 +89,17 @@ public class LogrosService {
 
     public List<LogroResponseDTO> listarLogrosPorUsuario(Long usuarioId) {
         log.info("Listando logros del usuario ID: {}", usuarioId);
+        
+        try {
+            UsuarioResponseDTO usuario = usuariosClient.buscarPorId(usuarioId);
+            if (usuario == null) {
+                throw new IllegalArgumentException("Usuario no encontrado con ID: " + usuarioId);
+            }
+        } catch (Exception ex) {
+            log.error("Error validando la existencia del usuario {} - {}", usuarioId, ex.getMessage());
+            throw new IllegalArgumentException("Usuario no encontrado con ID: " + usuarioId);
+        }
+
         return logrosRepository.findByUsuarioId(usuarioId).stream()
             .map(this::toDTO)
             .collect(Collectors.toList());
@@ -83,6 +113,7 @@ public class LogrosService {
     }
 
     public LogroDisponibleResponseDTO crearLogroDisponible(LogroDisponibleRequestDTO request) {
+        validarJuego(request.getJuegoId());
         LogroDisponible entity = LogroDisponible.builder()
                 .juegoId(request.getJuegoId())
                 .nombre(request.getNombre())
