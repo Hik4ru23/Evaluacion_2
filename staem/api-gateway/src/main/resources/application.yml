@@ -1,0 +1,159 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      mvc:
+        routes:
+        - id: amigos
+          uri: lb://amigos
+          predicates:
+            - Path=/amigos/**
+          filters:
+            - StripPrefix=1
+            - AddRequestHeader=X-Forwarded-Prefix, /amigos
+        - id: biblioteca
+          uri: lb://biblioteca
+          predicates:
+            - Path=/biblioteca/**
+          filters:
+            - StripPrefix=1
+            - AddRequestHeader=X-Forwarded-Prefix, /biblioteca
+        - id: carrito
+          uri: lb://carrito
+          predicates:
+            - Path=/carrito/**
+          filters:
+            - StripPrefix=1
+            - AddRequestHeader=X-Forwarded-Prefix, /carrito
+        - id: catalogo
+          uri: lb://catalogo
+          predicates:
+            - Path=/catalogo/**
+          filters:
+            - StripPrefix=1
+            - AddRequestHeader=X-Forwarded-Prefix, /catalogo
+        - id: logros
+          uri: lb://logros
+          predicates:
+            - Path=/logros/**
+          filters:
+            - StripPrefix=1
+            - AddRequestHeader=X-Forwarded-Prefix, /logros
+        - id: pagos
+          uri: lb://pagos
+          predicates:
+            - Path=/pagos/**
+          filters:
+            - StripPrefix=1
+            - AddRequestHeader=X-Forwarded-Prefix, /pagos
+        - id: promociones
+          uri: lb://promociones
+          predicates:
+            - Path=/promociones/**
+          filters:
+            - StripPrefix=1
+            - AddRequestHeader=X-Forwarded-Prefix, /promociones
+        - id: resenas
+          uri: lb://resenas
+          predicates:
+            - Path=/resenas/**
+          filters:
+            - StripPrefix=1
+            - AddRequestHeader=X-Forwarded-Prefix, /resenas
+        - id: soporte
+          uri: lb://soporte
+          predicates:
+            - Path=/soporte/**
+          filters:
+            - StripPrefix=1
+            - AddRequestHeader=X-Forwarded-Prefix, /soporte
+        - id: usuarios
+          uri: lb://usuarios
+          predicates:
+            - Path=/usuarios/**
+          filters:
+            - StripPrefix=1
+            - AddRequestHeader=X-Forwarded-Prefix, /usuarios
+
+
+        - id: amigos-api
+          uri: lb://amigos
+          predicates:
+            - Path=/api/amigos/**
+        - id: biblioteca-api
+          uri: lb://biblioteca
+          predicates:
+            - Path=/api/biblioteca/**
+        - id: carrito-api
+          uri: lb://carrito
+          predicates:
+            - Path=/api/carrito/**
+        - id: catalogo-api
+          uri: lb://catalogo
+          predicates:
+            - Path=/api/catalogo/**
+        - id: logros-api
+          uri: lb://logros
+          predicates:
+            - Path=/api/logros/**
+        - id: pagos-api
+          uri: lb://pagos
+          predicates:
+            - Path=/api/pagos/**
+        - id: promociones-api
+          uri: lb://promociones
+          predicates:
+            - Path=/api/promociones/**
+        - id: resenas-api
+          uri: lb://resenas
+          predicates:
+            - Path=/api/resenas/**
+        - id: soporte-api
+          uri: lb://soporte
+          predicates:
+            - Path=/api/soporte/**
+        - id: usuarios-api
+          uri: lb://usuarios
+          predicates:
+            - Path=/api/usuarios/**
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eureka-server:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+    restclient:
+      enabled: true
+
+springdoc:
+  swagger-ui:
+    urls:
+      - name: amigos
+        url: /amigos/v3/api-docs
+      - name: biblioteca
+        url: /biblioteca/v3/api-docs
+      - name: carrito
+        url: /carrito/v3/api-docs
+      - name: catalogo
+        url: /catalogo/v3/api-docs
+      - name: logros
+        url: /logros/v3/api-docs
+      - name: pagos
+        url: /pagos/v3/api-docs
+      - name: promociones
+        url: /promociones/v3/api-docs
+      - name: resenas
+        url: /resenas/v3/api-docs
+      - name: soporte
+        url: /soporte/v3/api-docs
+      - name: usuarios
+        url: /usuarios/v3/api-docs
+    operations-sorter: method
